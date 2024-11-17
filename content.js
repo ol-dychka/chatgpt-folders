@@ -8,7 +8,8 @@
 
 // Function to append the button to links
 function appendButtonToLinks() {
-  const links = document.querySelectorAll("a"); // Select all link elements
+  const links = document.querySelectorAll("li > div > a"); // Select all link elements
+  console.log("btn");
 
   links.forEach((link) => {
     // Check if button is already appended to avoid infinite loop
@@ -21,7 +22,7 @@ function appendButtonToLinks() {
       button.addEventListener("click", (e) => {
         e.preventDefault();
         console.log("clicked");
-        openMenu(link.href);
+        openMenu(link.firstChild.innerText, link.href);
       });
 
       link.appendChild(button);
@@ -30,55 +31,59 @@ function appendButtonToLinks() {
 }
 
 function appendMenu() {
-  const menu = document.createElement("div");
-  menu.id = "hidden-menu";
-  menu.style.display = "none"; // Initially hidden
-  menu.style.position = "fixed";
-  menu.style.top = "50%";
-  menu.style.left = "50%";
-  menu.style.transform = "translate(-50%, -50%)";
-  menu.style.padding = "20px";
-  menu.style.backgroundColor = "#f0f0f0";
-  menu.style.border = "1px solid black";
+  if (!document.body.querySelector(".custom-menu")) {
+    const menu = document.createElement("div");
+    menu.className = "custom-menu";
 
-  const selected = document.createElement("p");
-  selected.id = "selected";
-  selected.style.color = "red";
+    menu.id = "hidden-menu";
+    menu.style.display = "none"; // Initially hidden
+    menu.style.position = "fixed";
+    menu.style.top = "50%";
+    menu.style.left = "50%";
+    menu.style.transform = "translate(-50%, -50%)";
+    menu.style.padding = "20px";
+    menu.style.backgroundColor = "#f0f0f0";
+    menu.style.border = "1px solid black";
 
-  const folders = document.createElement("div");
-  folders.id = "folders";
-  folders.style.display = "flex";
-  folders.style.gap = "1rem";
+    const selected = document.createElement("p");
+    selected.id = "selected";
+    selected.style.color = "red";
 
-  const folderName = document.createElement("input");
-  folderName.id = "foldername";
-  folderName.type = "text";
+    const folders = document.createElement("div");
+    folders.id = "folders";
+    folders.style.display = "flex";
+    folders.style.gap = "1rem";
 
-  const addFolder = document.createElement("button");
-  addFolder.id = "addfolder";
-  addFolder.innerText = "Add Folder";
+    const folderName = document.createElement("input");
+    folderName.id = "foldername";
+    folderName.type = "text";
 
-  const addToFolder = document.createElement("button");
-  addToFolder.id = "addtofolder";
-  addToFolder.innerText = "Add";
+    const addFolder = document.createElement("button");
+    addFolder.id = "addfolder";
+    addFolder.innerText = "Add Folder";
 
-  const helperText = document.createElement("div");
-  helperText.id = "helpertext";
-  helperText.style.display = "none";
-  helperText.innerText = "Folder with this name already exists";
+    const addToFolder = document.createElement("button");
+    addToFolder.id = "addtofolder";
+    addToFolder.innerText = "Add";
 
-  menu.appendChild(selected);
-  menu.appendChild(folders);
-  menu.appendChild(folderName);
-  menu.appendChild(addFolder);
-  menu.appendChild(addToFolder);
-  menu.appendChild(helperText);
+    const helperText = document.createElement("div");
+    helperText.id = "helpertext";
+    helperText.style.display = "none";
+    helperText.innerText = "Folder with this name already exists";
 
-  document.body.appendChild(menu);
+    menu.appendChild(selected);
+    menu.appendChild(folders);
+    menu.appendChild(folderName);
+    menu.appendChild(addFolder);
+    menu.appendChild(addToFolder);
+    menu.appendChild(helperText);
+
+    document.body.appendChild(menu);
+  }
 }
 
 // open menu
-function openMenu(href) {
+function openMenu(name, href) {
   // Show the menu
   const menu = document.getElementById("hidden-menu");
   menu.style.display = "block";
@@ -147,23 +152,110 @@ function openMenu(href) {
   // add to folder
   const add = () => {
     console.log(selectedFolder);
+    console.log(name);
     if (!selectedFolder) return;
     chrome.storage.local.get(selectedFolder).then((result) => {
       const folder = result[selectedFolder] || [];
 
-      chrome.storage.local.set({ [selectedFolder]: [...folder, href] });
+      chrome.storage.local.set({
+        [selectedFolder]: [...folder, { name, href }],
+      });
     });
 
     addToFolder.removeEventListener("click", add, true);
     addFolder.removeEventListener("click", addfld, true);
     folders.innerHTML = "";
     menu.style.display = "none";
+    updateFolders();
   };
   addToFolder.addEventListener("click", add, true);
 }
 
+function appendFolders() {
+  const nav = document.querySelector("nav");
+  const target = nav.getElementsByTagName("div")[2];
+  console.log("fld");
+
+  if (!target.querySelector(".custom-folders")) {
+    const itemList = document.createElement("ul");
+    itemList.className = "custom-folders";
+
+    chrome.storage.local.get("folders").then((result) => {
+      const folders = result.folders || [];
+      folders.forEach((folder) => {
+        const li = document.createElement("li");
+        li.innerText = folder;
+        const ul = document.createElement("ul");
+
+        chrome.storage.local.get([folder]).then((result) => {
+          const items = result[folder] || [];
+          items.forEach((item) => {
+            const li = document.createElement("li");
+            const a = document.createElement("a");
+
+            a.href = item.href;
+            a.innerText = item.name;
+            a.target = "_self";
+
+            li.style.marginLeft = "1rem";
+
+            // dragging
+            li.addEventListener("");
+
+            li.appendChild(a);
+            ul.appendChild(li);
+          });
+        });
+        li.appendChild(ul);
+        itemList.appendChild(li);
+      });
+    });
+
+    target.insertBefore(itemList, target.firstChild);
+  }
+}
+
+function updateFolders() {
+  const target = document.querySelector(".custom-folders");
+
+  const itemList = document.createElement("ul");
+  itemList.className = "custom-folders";
+
+  chrome.storage.local.get("folders").then((result) => {
+    const folders = result.folders || [];
+    folders.forEach((folder) => {
+      const li = document.createElement("li");
+      li.innerText = folder;
+      const ul = document.createElement("ul");
+
+      chrome.storage.local.get([folder]).then((result) => {
+        const items = result[folder] || [];
+        items.forEach((item) => {
+          const li = document.createElement("li");
+          const a = document.createElement("a");
+
+          a.href = item.href;
+          a.innerText = item.name;
+          a.target = "_self";
+
+          li.style.marginLeft = "1rem";
+
+          li.appendChild(a);
+          ul.appendChild(li);
+        });
+      });
+      li.appendChild(ul);
+      itemList.appendChild(li);
+    });
+  });
+
+  target.replaceWith(itemList);
+}
+
 // Observe changes in the DOM using MutationObserver
 const observer = new MutationObserver(() => {
+  appendMenu();
+  appendFolders();
   appendButtonToLinks(); // Call the function on every mutation
 });
 // Start observing the document body for changes
@@ -173,5 +265,6 @@ observer.observe(document.body, {
 });
 
 // Initial call to append buttons and menu when the script first runs
-appendButtonToLinks();
-appendMenu();
+// appendButtonToLinks();
+// appendFolders();
+// appendMenu();
