@@ -1,11 +1,3 @@
-// testing only
-// chrome.storage.local.clear(function () {
-//   var error = chrome.runtime.lastError;
-//   if (error) {
-//     console.error(error);
-//   }
-// });
-
 // Function to append the button to links
 function appendButtonToLinks() {
   const links = document.querySelectorAll("li > div > a"); // Select all link elements
@@ -171,6 +163,10 @@ function openMenu(name, href) {
   addToFolder.addEventListener("click", add, true);
 }
 
+// drag from folder to folder
+let dragged;
+let draggedFrom;
+
 function appendFolders() {
   const nav = document.querySelector("nav");
   const target = nav.getElementsByTagName("div")[2];
@@ -187,23 +183,74 @@ function appendFolders() {
         li.innerText = folder;
         const ul = document.createElement("ul");
 
+        li.addEventListener(
+          "dragover",
+          (e) => {
+            e.preventDefault();
+          },
+          false
+        );
+        li.addEventListener("drop", (e) => {
+          e.preventDefault();
+          ul.appendChild(dragged);
+
+          console.log(dragged);
+          console.log(draggedFrom);
+          console.log(li.innerText);
+
+          //removing from old folder
+          chrome.storage.local.get([draggedFrom]).then((result) => {
+            const folder = result[draggedFrom] || [];
+
+            chrome.storage.local.set({
+              [draggedFrom]: folder.filter(
+                (x) => x.href !== dragged.firstChild.href
+              ),
+            });
+          });
+
+          const newFolderName = li.firstChild.textContent;
+          //adding to new folder
+          chrome.storage.local.get([newFolderName]).then((result) => {
+            const folder = result[newFolderName] || [];
+
+            chrome.storage.local.set({
+              [newFolderName]: [
+                ...folder,
+                {
+                  name: dragged.firstChild.innerText,
+                  href: dragged.firstChild.href,
+                },
+              ],
+            });
+          });
+        });
+
         chrome.storage.local.get([folder]).then((result) => {
           const items = result[folder] || [];
           items.forEach((item) => {
-            const li = document.createElement("li");
+            const li1 = document.createElement("li");
             const a = document.createElement("a");
 
             a.href = item.href;
             a.innerText = item.name;
             a.target = "_self";
 
-            li.style.marginLeft = "1rem";
+            li1.style.marginLeft = "1rem";
+            li1.style.border = "1px solid black";
+            li1.draggable = true;
+            li1.style.userSelect = "none";
 
             // dragging
-            li.addEventListener("");
+            li1.addEventListener("dragstart", (e) => {
+              dragged = e.target.parentNode;
+              draggedFrom =
+                e.target.parentNode.parentNode.parentNode.firstChild
+                  .textContent;
+            });
 
-            li.appendChild(a);
-            ul.appendChild(li);
+            li1.appendChild(a);
+            ul.appendChild(li1);
           });
         });
         li.appendChild(ul);
