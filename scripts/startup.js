@@ -1,7 +1,6 @@
 // append "+" buttons to links
 function appendButtonsToLinks() {
   const links = document.querySelectorAll("li > div > a"); // Select all link elements
-  console.log("btn");
 
   links.forEach((link) => {
     // Check if button is already appended to avoid infinite loop
@@ -85,14 +84,25 @@ function appendMenu() {
 }
 
 // append folder menu to the nav bar
-function appendFolders() {
-  const nav = document.querySelector("nav");
-  const target = nav.getElementsByTagName("div")[2];
-  console.log("fld");
+// async functions have problams with rapid mutations so i use a flag here
+let isRunning = false;
+async function appendFolders() {
+  if (isRunning) return;
+  console.log("fld running");
 
-  if (!target.querySelector(".custom-folders")) {
-    const folders = getFolders();
+  try {
+    isRunning = true;
+    const nav = document.querySelector("nav");
+    const target = nav.getElementsByTagName("div")[2];
 
-    target.insertBefore(folders, target.firstChild);
+    if (!target.querySelector(".folders")) {
+      const folders = await getFolders();
+      console.log(folders);
+      target.insertBefore(folders, target.firstChild);
+    }
+  } catch (err) {
+    console.log(err);
+  } finally {
+    isRunning = false;
   }
 }

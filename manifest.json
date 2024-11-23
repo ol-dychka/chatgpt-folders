@@ -8,6 +8,7 @@
     {
       "matches": ["https://chatgpt.com/*"],
       "js": ["scripts/folders.js", "scripts/startup.js", "content.js"],
+      "css": ["style.css"],
       "type": "module",
       "run_at": "document_end"
     }
@@ -17,5 +18,6 @@
   },
   "background": {
     "service_worker": "background.js"
-  }
+  },
+  "host_permissions": ["*://*/*"]
 }

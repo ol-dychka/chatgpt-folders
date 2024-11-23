@@ -1,0 +1,56 @@
+.folder-header {
+  display: flex;
+  gap: 5px;
+  align-items: center;
+  padding: 5px 15px;
+  margin-bottom: 5px;
+  border-radius: 10px;
+  margin-left: -6px;
+}
+
+.folder-name {
+  font-size: 14px;
+}
+
+.folders-container {
+  padding: 8px;
+  margin-bottom: 1rem;
+}
+
+.folders-label {
+  font-weight: 600;
+  font-size: 12px;
+  margin-bottom: 10px;
+}
+
+.toggle-open-button-rotated {
+  transform: rotate(45deg);
+}
+
+.toggle-open-button {
+  transition: all 0.1s ease-out;
+}
+
+.folder-header:hover {
+  background-color: #ececec;
+}
+
+.folder-header-open {
+  background-color: #ececec;
+}
+
+.chat-header {
+  display: flex;
+  font-size: 14px;
+  justify-content: space-between;
+  align-items: center;
+  padding: 5px 15px;
+  margin-bottom: 5px;
+  border-radius: 10px;
+  margin-left: 10px;
+  user-select: none;
+}
+
+.chat-header:hover {
+  background-color: #ececec;
+}

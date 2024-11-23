@@ -94,9 +94,9 @@ function openMenu(name, href) {
 }
 
 // Observe changes in the DOM using MutationObserver
-const observer = new MutationObserver(() => {
+const observer = new MutationObserver(async () => {
+  await appendFolders();
   appendMenu();
-  appendFolders();
   appendButtonsToLinks(); // Call the function on every mutation
 });
 // Start observing the document body for changes
