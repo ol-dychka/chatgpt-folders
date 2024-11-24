@@ -7,7 +7,12 @@
   "content_scripts": [
     {
       "matches": ["https://chatgpt.com/*"],
-      "js": ["scripts/folders.js", "scripts/startup.js", "content.js"],
+      "js": [
+        "scripts/folderMenu.js",
+        "scripts/folders.js",
+        "scripts/startup.js",
+        "content.js"
+      ],
       "css": ["style.css"],
       "type": "module",
       "run_at": "document_end"

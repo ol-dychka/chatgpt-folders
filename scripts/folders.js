@@ -3,16 +3,16 @@ function createFolderNode(folder, chatsNode) {
 
   const folderHeader = document.createElement("div");
   folderHeader.classList.add("folder-header");
+  folderHeader.style.backgroundColor = folder.color;
+  folderHeader.style.color = getContrastColor(folder.color);
 
   const folderName = document.createElement("div");
   folderName.classList.add("folder-name");
-
   folderName.innerText = folder.name;
-  // folderName.style.backgroundColor = folder.color;
 
   const toggleOpenButton = document.createElement("button");
   toggleOpenButton.classList.add("toggle-open-button");
-  toggleOpenButton.innerText = "+";
+  toggleOpenButton.innerText = "›";
   if (folder.open) toggleOpenButton.classList.add("toggle-open-button-rotated");
   toggleOpenButton.addEventListener("click", () =>
     toggleFolder(folder, toggleOpenButton, folderHeader, chatsNode)
@@ -39,7 +39,8 @@ function createChatNode(chat, folder) {
   link.target = "_self";
 
   const deleteButton = document.createElement("button");
-  deleteButton.textContent = "-";
+  deleteButton.classList.add("inline-button");
+  deleteButton.textContent = "×";
   deleteButton.addEventListener("click", () =>
     handleChatDelete(chat, folder.name, chatNode)
   );
@@ -86,26 +87,24 @@ async function handleDrop(e, destinationFolderName) {
   const { [destinationFolderName]: destinationFolder = [] } =
     await chrome.storage.local.get([destinationFolderName]);
 
-  if (!destinationFolder.some((chat) => chat.href === draggedChatHref)) {
-    await chrome.storage.local.set({
-      [destinationFolderName]: [
-        ...destinationFolder,
-        {
-          name: draggedChatName,
-          href: draggedChatHref,
-        },
-      ],
-    });
+  if (destinationFolder.some((chat) => chat.href === draggedChatHref)) return;
 
-    const { [sourceFolderName]: sourceFolder = [] } =
-      await chrome.storage.local.get([sourceFolderName]);
+  chrome.storage.local.set({
+    [destinationFolderName]: [
+      ...destinationFolder,
+      {
+        name: draggedChatName,
+        href: draggedChatHref,
+      },
+    ],
+  });
 
-    await chrome.storage.local.set({
-      [sourceFolderName]: sourceFolder.filter(
-        (x) => x.href !== draggedChatHref
-      ),
-    });
-  }
+  const { [sourceFolderName]: sourceFolder = [] } =
+    await chrome.storage.local.get([sourceFolderName]);
+
+  chrome.storage.local.set({
+    [sourceFolderName]: sourceFolder.filter((x) => x.href !== draggedChatHref),
+  });
 
   updateFolders();
 }
@@ -125,6 +124,11 @@ async function getFolders() {
   const foldersLabel = document.createElement("p");
   foldersLabel.classList.add("folders-label");
   foldersLabel.textContent = "Folders";
+
+  const createFolderButton = document.createElement("button");
+  createFolderButton.classList.add("styled-button");
+  createFolderButton.innerText = "Add new folder";
+  createFolderButton.addEventListener("click", () => attachFolderMenu());
 
   const foldersNode = document.createElement("ul");
   foldersNode.classList.add("folders");
@@ -148,6 +152,7 @@ async function getFolders() {
 
   foldersContainer.appendChild(foldersLabel);
   foldersContainer.appendChild(foldersNode);
+  foldersContainer.appendChild(createFolderButton);
   return foldersContainer;
 }
 
@@ -156,4 +161,19 @@ async function updateFolders() {
 
   const folders = await getFolders();
   target.replaceWith(folders);
+}
+
+function getContrastColor(color) {
+  color = color.replace("#", "");
+
+  // Convert hex to RGB values
+  let r = parseInt(color.substring(0, 2), 16);
+  let g = parseInt(color.substring(2, 4), 16);
+  let b = parseInt(color.substring(4, 6), 16);
+
+  // Calculate the luminance (brightness)
+  let luminance = 0.299 * r + 0.587 * g + 0.114 * b;
+
+  // Return black for light colors, white for dark colors
+  return luminance > 128 ? "#000000" : "#ffffff";
 }

@@ -7,8 +7,8 @@ function appendButtonsToLinks() {
     if (!link.querySelector(".custom-button")) {
       const button = document.createElement("button");
       button.innerText = "+";
-      button.style.marginRight = "2rem";
-      button.className = "custom-button"; // Add class to identify appended buttons
+      button.classList.add("add-chat-button", "inline-button");
+      button.classList.add("custom-button");
 
       button.addEventListener("click", (e) => {
         e.preventDefault();
@@ -84,7 +84,7 @@ function appendMenu() {
 }
 
 // append folder menu to the nav bar
-// async functions have problams with rapid mutations so i use a flag here
+// async functions have problams with rapid mutations so flag is used here
 let isRunning = false;
 async function appendFolders() {
   if (isRunning) return;
