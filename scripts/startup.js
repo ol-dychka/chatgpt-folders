@@ -13,74 +13,12 @@ function appendButtonsToLinks() {
       button.addEventListener("click", (e) => {
         e.preventDefault();
         console.log("clicked");
-        openMenu(link.firstChild.innerText, link.href);
+        attachChatMenu(link.firstChild.innerText, link.href);
       });
 
       link.appendChild(button);
     }
   });
-}
-
-// append folder creation / chat adding menu
-function appendMenu() {
-  if (!document.body.querySelector(".custom-menu")) {
-    const menu = document.createElement("div");
-    menu.className = "custom-menu";
-
-    menu.id = "hidden-menu";
-    menu.style.display = "none"; // Initially hidden
-    menu.style.position = "fixed";
-    menu.style.top = "50%";
-    menu.style.left = "50%";
-    menu.style.transform = "translate(-50%, -50%)";
-    menu.style.padding = "20px";
-    menu.style.backgroundColor = "#f0f0f0";
-    menu.style.border = "1px solid black";
-
-    const selected = document.createElement("p");
-    selected.id = "selected";
-    selected.style.color = "red";
-
-    const folders = document.createElement("div");
-    folders.id = "folders";
-    folders.style.display = "flex";
-    folders.style.gap = "1rem";
-
-    const folderName = document.createElement("input");
-    folderName.id = "foldername";
-    folderName.type = "text";
-    folderName.style.width = "100%";
-
-    const folderColor = document.createElement("input");
-    folderColor.id = "foldercolor";
-    folderColor.type = "color";
-    folderColor.value = "#22ff33";
-
-    const addFolder = document.createElement("button");
-    addFolder.id = "addfolder";
-    addFolder.innerText = "Add Folder";
-    addFolder.style.width = "100%";
-
-    const addToFolder = document.createElement("button");
-    addToFolder.id = "addtofolder";
-    addToFolder.innerText = "Add";
-    addToFolder.style.width = "100%";
-
-    const helperText = document.createElement("div");
-    helperText.id = "helpertext";
-    helperText.style.display = "none";
-    helperText.innerText = "Folder with this name already exists";
-
-    menu.appendChild(selected);
-    menu.appendChild(folders);
-    menu.appendChild(folderName);
-    menu.appendChild(folderColor);
-    menu.appendChild(addFolder);
-    menu.appendChild(addToFolder);
-    menu.appendChild(helperText);
-
-    document.body.appendChild(menu);
-  }
 }
 
 // append folder menu to the nav bar

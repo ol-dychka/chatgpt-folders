@@ -1,22 +1,31 @@
-function createFolderNode(folder, chatsNode) {
+function createFolderNode(folder, chatsNode, folders) {
   const folderNode = document.createElement("li");
 
   const folderHeader = document.createElement("div");
   folderHeader.classList.add("folder-header");
-  folderHeader.style.backgroundColor = folder.color;
-  folderHeader.style.color = getContrastColor(folder.color);
+  // folderHeader.style.backgroundColor = folder.color;
+  // folderHeader.style.color = getContrastColor(folder.color);
 
   const folderName = document.createElement("div");
   folderName.classList.add("folder-name");
   folderName.innerText = folder.name;
 
   const toggleOpenButton = document.createElement("button");
-  toggleOpenButton.classList.add("toggle-open-button");
+  toggleOpenButton.classList.add("toggle-open-button", "inline-button");
   toggleOpenButton.innerText = "›";
   if (folder.open) toggleOpenButton.classList.add("toggle-open-button-rotated");
   toggleOpenButton.addEventListener("click", () =>
-    toggleFolder(folder, toggleOpenButton, folderHeader, chatsNode)
+    toggleFolder(folder, toggleOpenButton, folderHeader, chatsNode, folders)
   );
+
+  //check if folder is open
+  if (folder.open) {
+    toggleOpenButton.classList.add("toggle-open-button-rotated");
+    folderHeader.classList.add("folder-header-open");
+  } else {
+    toggleOpenButton.classList.remove("toggle-open-button-rotated");
+    folderHeader.classList.remove("folder-header-open");
+  }
 
   folderHeader.appendChild(toggleOpenButton);
   folderHeader.appendChild(folderName);
@@ -53,7 +62,13 @@ function createChatNode(chat, folder) {
   return chatNode;
 }
 
-function toggleFolder(folder, toggleOpenButton, folderHeader, chatsNode) {
+function toggleFolder(
+  folder,
+  toggleOpenButton,
+  folderHeader,
+  chatsNode,
+  folders
+) {
   folder.open = !folder.open;
   chatsNode.hidden = !chatsNode.hidden;
   if (folder.open) {
@@ -63,6 +78,12 @@ function toggleFolder(folder, toggleOpenButton, folderHeader, chatsNode) {
     toggleOpenButton.classList.remove("toggle-open-button-rotated");
     folderHeader.classList.remove("folder-header-open");
   }
+
+  chrome.storage.local.set({
+    folders: folders.map((f) =>
+      f.name === folder.name ? { ...f, open: folder.open } : f
+    ),
+  });
 }
 
 async function handleChatDelete(chat, folderName, chatNode) {
@@ -135,7 +156,7 @@ async function getFolders() {
 
   folders.forEach(async (folder) => {
     const chatsNode = document.createElement("ul");
-    const folderNode = createFolderNode(folder, chatsNode);
+    const folderNode = createFolderNode(folder, chatsNode, folders);
     chatsNode.hidden = !folder.open;
 
     const { [folder.name]: chats = [] } = await chrome.storage.local.get([

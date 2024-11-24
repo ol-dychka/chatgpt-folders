@@ -61,7 +61,7 @@ async function handleAddFolder(name, color) {
     if (folders.some((folder) => folder.name === name)) return;
 
     chrome.storage.local.set({
-      folders: [...folders, { name, color }],
+      folders: [...folders, { name, color, open: true }],
     });
     handleCloseFolderMenu();
     updateFolders();

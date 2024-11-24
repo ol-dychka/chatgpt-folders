@@ -9,6 +9,7 @@
       "matches": ["https://chatgpt.com/*"],
       "js": [
         "scripts/folderMenu.js",
+        "scripts/chatMenu.js",
         "scripts/folders.js",
         "scripts/startup.js",
         "content.js"

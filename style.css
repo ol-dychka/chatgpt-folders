@@ -41,6 +41,27 @@
   outline: none;
 }
 
+input[type="checkbox"]:checked {
+  color: #5d5d5d;
+}
+
+input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+  border-radius: 0.5rem;
+  background-color: #fff;
+  border: 2px solid #ccc;
+  cursor: pointer;
+  appearance: none; /* Remove default checkbox styles */
+  -webkit-appearance: none;
+}
+
+input[type="checkbox"]:focus {
+  outline: none; /* Remove the focus outline */
+  -webkit-box-shadow: none; /* For WebKit (Chrome, Safari) */
+  box-shadow: none; /* Remove focus box-shadow */
+}
+
 /* STARTUP */
 
 .add-chat-button {
@@ -59,11 +80,11 @@
 }
 
 .folder-header:hover {
-  filter: brightness(0.95);
+  background-color: #ececec;
 }
 
 .folder-header-open {
-  filter: brightness(0.95);
+  background-color: #ececec;
 }
 
 .folder-name {
@@ -107,7 +128,7 @@
   background-color: #ececec;
 }
 
-/* FOLDERMENU */
+/* FOLDER MENU */
 .folder-menu-container {
   position: fixed;
   top: 50px;
@@ -124,4 +145,31 @@
 
 .folder-menu-inputs {
   margin: 0.5rem 0;
+}
+
+/* CHAT MENU */
+.chat-menu-container {
+  position: fixed;
+  bottom: 50px;
+  left: 260px;
+  background-color: #f9f9f9;
+  border-radius: 20px;
+  padding: 10px;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+.chat-menu-label {
+  font-size: 14px;
+}
+
+.folder-select-header {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+}
+
+.folder-select-header:hover {
+  background-color: #ececec;
 }
