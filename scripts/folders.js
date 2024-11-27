@@ -1,4 +1,4 @@
-function createFolderNode(folder, chatsNode, folders) {
+function createFolderNode(folder, chatsNode) {
   const folderNode = document.createElement("li");
 
   const folderHeader = document.createElement("div");
@@ -10,29 +10,46 @@ function createFolderNode(folder, chatsNode, folders) {
   folderName.classList.add("folder-name");
   folderName.innerText = folder.name;
 
-  const toggleOpenButton = document.createElement("button");
-  toggleOpenButton.classList.add("toggle-open-button", "inline-button");
-  toggleOpenButton.innerText = "›";
-  if (folder.open) toggleOpenButton.classList.add("toggle-open-button-rotated");
-  toggleOpenButton.addEventListener("click", () =>
-    toggleFolder(folder, toggleOpenButton, folderHeader, chatsNode, folders)
+  const optionsButton = document.createElement("button");
+  optionsButton.classList.add("inline-text-button");
+  optionsButton.innerText = "•••";
+  optionsButton.addEventListener("click", (e) =>
+    attachPopup((close) =>
+      createFolderOptions(
+        folder,
+        folderName,
+        e.clientX,
+        e.clientY,
+        optionsButton,
+        close
+      )
+    )
+  );
+
+  const toggleButton = document.createElement("button");
+  toggleButton.classList.add("toggle-open-button", "inline-button");
+  toggleButton.innerText = "›";
+  if (folder.open) toggleButton.classList.add("toggle-open-button-rotated");
+  toggleButton.addEventListener("click", () =>
+    toggleFolder(folder, toggleButton, folderHeader, chatsNode)
   );
 
   //check if folder is open
   if (folder.open) {
-    toggleOpenButton.classList.add("toggle-open-button-rotated");
+    toggleButton.classList.add("toggle-open-button-rotated");
     folderHeader.classList.add("folder-header-open");
   } else {
-    toggleOpenButton.classList.remove("toggle-open-button-rotated");
+    toggleButton.classList.remove("toggle-open-button-rotated");
     folderHeader.classList.remove("folder-header-open");
   }
 
-  folderHeader.appendChild(toggleOpenButton);
+  folderHeader.appendChild(toggleButton);
   folderHeader.appendChild(folderName);
+  folderHeader.appendChild(optionsButton);
   folderNode.appendChild(folderHeader);
 
   folderNode.addEventListener("dragover", (e) => e.preventDefault(), false);
-  folderNode.addEventListener("drop", (e) => handleDrop(e, folder.name), false);
+  folderNode.addEventListener("drop", (e) => handleDrop(e, folder.id), false);
 
   return folderNode;
 }
@@ -51,7 +68,7 @@ function createChatNode(chat, folder) {
   deleteButton.classList.add("inline-button");
   deleteButton.textContent = "×";
   deleteButton.addEventListener("click", () =>
-    handleChatDelete(chat, folder.name, chatNode)
+    handleChatDelete(chat, folder.id, chatNode)
   );
 
   chatNode.appendChild(link);
@@ -62,13 +79,91 @@ function createChatNode(chat, folder) {
   return chatNode;
 }
 
-function toggleFolder(
+function createFolderOptions(
   folder,
-  toggleOpenButton,
-  folderHeader,
-  chatsNode,
-  folders
+  folderNameNode,
+  x,
+  y,
+  optionsButton,
+  close
 ) {
+  const container = document.createElement("div");
+  container.classList.add("options-container");
+  container.style.top = `${y}px`;
+  container.style.left = `${x}px`;
+
+  const editButton = document.createElement("button");
+  editButton.classList.add("styled-button");
+  editButton.innerText = "Edit";
+  editButton.addEventListener("click", () => {
+    handleEditFolderName(folderNameNode, editButton, optionsButton);
+    close();
+  });
+
+  const deleteButton = document.createElement("button");
+  deleteButton.classList.add("styled-button");
+  deleteButton.innerText = "Delete";
+  deleteButton.addEventListener("click", () => {
+    handleDeleteFolder(folder.id);
+    close();
+  });
+
+  container.appendChild(editButton);
+  container.appendChild(deleteButton);
+
+  return container;
+}
+
+async function handleDeleteFolder(id) {
+  const { folders = [] } = await chrome.storage.local.get("folders");
+
+  chrome.storage.local.set({
+    folders: folders.filter((f) => f.id !== id),
+  });
+  chrome.storage.local.remove([id]);
+
+  updateFolders();
+}
+
+async function handleEditFolderName(folderNameNode, editButton, optionsButton) {
+  optionsButton.disabled = true;
+  const { folders = [] } = await chrome.storage.local.get("folders");
+  const oldName = folderNameNode.innerText;
+
+  const input = document.createElement("input");
+  input.classList.add("styled-inline-input");
+  input.value = oldName;
+
+  const saveButton = document.createElement("button");
+  saveButton.classList.add("inline-text-button");
+  saveButton.textContent = "Save";
+
+  editButton.disabled = true;
+
+  folderNameNode.innerText = null;
+  folderNameNode.appendChild(input);
+  folderNameNode.appendChild(saveButton);
+
+  saveButton.addEventListener("click", () => {
+    folderNameNode.removeChild(folderNameNode.firstChild);
+    folderNameNode.removeChild(folderNameNode.firstChild);
+    editButton.disabled = false;
+    const newName = input.value;
+    folderNameNode.innerText = newName;
+
+    chrome.storage.local.set({
+      folders: folders.map((f) =>
+        f.name === oldName ? { ...f, name: newName } : f
+      ),
+    });
+
+    optionsButton.disabled = false;
+  });
+}
+
+async function toggleFolder(folder, toggleOpenButton, folderHeader, chatsNode) {
+  const { folders = [] } = await chrome.storage.local.get("folders");
+
   folder.open = !folder.open;
   chatsNode.hidden = !chatsNode.hidden;
   if (folder.open) {
@@ -81,37 +176,37 @@ function toggleFolder(
 
   chrome.storage.local.set({
     folders: folders.map((f) =>
-      f.name === folder.name ? { ...f, open: folder.open } : f
+      f.id === folder.id ? { ...f, open: folder.open } : f
     ),
   });
 }
 
-async function handleChatDelete(chat, folderName, chatNode) {
-  const { [folderName]: targetFolder = [] } = await chrome.storage.local.get([
-    folderName,
+async function handleChatDelete(chat, folderId, chatNode) {
+  const { [folderId]: targetFolder = [] } = await chrome.storage.local.get([
+    folderId,
   ]);
 
   await chrome.storage.local.set({
-    [folderName]: targetFolder.filter((x) => x.href !== chat.href),
+    [folderId]: targetFolder.filter((x) => x.href !== chat.href),
   });
 
   chatNode.parentNode.removeChild(chatNode);
 }
 
-async function handleDrop(e, destinationFolderName) {
+async function handleDrop(e, destinationFolderId) {
   e.preventDefault();
 
   const draggedChatName = e.dataTransfer.getData("chatName");
   const draggedChatHref = e.dataTransfer.getData("chatHref");
-  const sourceFolderName = e.dataTransfer.getData("sourceFolderName");
+  const sourceFolderId = e.dataTransfer.getData("sourceFolderId");
 
-  const { [destinationFolderName]: destinationFolder = [] } =
-    await chrome.storage.local.get([destinationFolderName]);
+  const { [destinationFolderId]: destinationFolder = [] } =
+    await chrome.storage.local.get([destinationFolderId]);
 
   if (destinationFolder.some((chat) => chat.href === draggedChatHref)) return;
 
   chrome.storage.local.set({
-    [destinationFolderName]: [
+    [destinationFolderId]: [
       ...destinationFolder,
       {
         name: draggedChatName,
@@ -120,11 +215,11 @@ async function handleDrop(e, destinationFolderName) {
     ],
   });
 
-  const { [sourceFolderName]: sourceFolder = [] } =
-    await chrome.storage.local.get([sourceFolderName]);
+  const { [sourceFolderId]: sourceFolder = [] } =
+    await chrome.storage.local.get([sourceFolderId]);
 
   chrome.storage.local.set({
-    [sourceFolderName]: sourceFolder.filter((x) => x.href !== draggedChatHref),
+    [sourceFolderId]: sourceFolder.filter((x) => x.href !== draggedChatHref),
   });
 
   updateFolders();
@@ -133,7 +228,7 @@ async function handleDrop(e, destinationFolderName) {
 function handleDrag(e, chat, folder) {
   e.dataTransfer.setData("chatName", chat.name);
   e.dataTransfer.setData("chatHref", chat.href);
-  e.dataTransfer.setData("sourceFolderName", folder.name);
+  e.dataTransfer.setData("sourceFolderId", folder.id);
 }
 
 async function getFolders() {
@@ -158,9 +253,10 @@ async function getFolders() {
     const chatsNode = document.createElement("ul");
     const folderNode = createFolderNode(folder, chatsNode, folders);
     chatsNode.hidden = !folder.open;
+    console.log(folder.id);
 
-    const { [folder.name]: chats = [] } = await chrome.storage.local.get([
-      folder.name,
+    const { [folder.id]: chats = [] } = await chrome.storage.local.get([
+      folder.id,
     ]);
     chats.forEach((chat) => {
       const chatNode = createChatNode(chat, folder);

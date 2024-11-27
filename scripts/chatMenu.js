@@ -8,12 +8,12 @@ async function attachChatMenu(name, href) {
 async function createChatMenu(name, href) {
   let selectedFolders = [];
 
-  const addToSelected = (folderName) => {
-    selectedFolders.push(folderName);
+  const addToSelected = (folderId) => {
+    selectedFolders.push(folderId);
   };
 
-  const removeFromSelected = (folderName) => {
-    selectedFolders = selectedFolders.filter((folder) => folder !== folderName);
+  const removeFromSelected = (folderId) => {
+    selectedFolders = selectedFolders.filter((id) => id !== folderId);
   };
 
   const chatMenuContainer = document.createElement("div");
@@ -68,8 +68,8 @@ function createFolderList(folders, addToSelected, removeFromSelected) {
     checkbox.classList.add("styled-checkbox");
     checkbox.type = "checkbox";
     checkbox.addEventListener("click", () => {
-      if (checkbox.checked) addToSelected(folder.name);
-      else removeFromSelected(folder.name);
+      if (checkbox.checked) addToSelected(folder.id);
+      else removeFromSelected(folder.id);
     });
 
     const label = document.createElement("p");
@@ -86,12 +86,12 @@ function createFolderList(folders, addToSelected, removeFromSelected) {
 
 function handleAddChat(name, href, selectedFolders) {
   if (!selectedFolders) return;
-  selectedFolders.forEach(async (folderName) => {
-    const { [folderName]: folder = [] } = await chrome.storage.local.get([
-      folderName,
+  selectedFolders.forEach(async (folderId) => {
+    const { [folderId]: folder = [] } = await chrome.storage.local.get([
+      folderId,
     ]);
     if (folder.some((chat) => chat.href === href)) return;
-    chrome.storage.local.set({ [folderName]: [...folder, { name, href }] });
+    chrome.storage.local.set({ [folderId]: [...folder, { name, href }] });
   });
   handleCloseChatMenu();
   updateFolders();

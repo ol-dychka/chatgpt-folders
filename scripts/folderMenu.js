@@ -58,10 +58,12 @@ async function handleAddFolder(name, color) {
   if (/\S/.test(name)) {
     // string is not empty and not just whitespace
     const { folders = [] } = await chrome.storage.local.get("folders");
+    const lastItem = folders[folders.length - 1];
+    const id = lastItem ? parseInt(lastItem.id) + 1 : 0;
     if (folders.some((folder) => folder.name === name)) return;
 
     chrome.storage.local.set({
-      folders: [...folders, { name, color, open: true }],
+      folders: [...folders, { id: id.toString(), name, color, open: true }],
     });
     handleCloseFolderMenu();
     updateFolders();

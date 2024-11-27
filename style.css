@@ -25,9 +25,20 @@
 .inline-button {
   color: #5d5d5d;
   font-weight: 700;
+  margin: 0 5px;
 }
 
 .inline-button:hover {
+  color: black;
+}
+
+.inline-text-button {
+  color: #5d5d5d;
+  font-size: 14px;
+  margin-left: auto;
+}
+
+.inline-text-button:hover {
   color: black;
 }
 
@@ -38,6 +49,15 @@
 }
 
 .styled-input:focus {
+  outline: none;
+}
+
+.styled-inline-input {
+  width: 100%;
+  border-radius: 0.5rem;
+}
+
+.styled-inline-input:focus {
   outline: none;
 }
 
@@ -89,6 +109,8 @@ input[type="checkbox"]:focus {
 
 .folder-name {
   font-size: 14px;
+  display: flex;
+  gap: 5px;
 }
 
 .folders-container {
@@ -120,7 +142,7 @@ input[type="checkbox"]:focus {
   padding: 7px 15px;
   margin-bottom: 5px;
   border-radius: 0.5rem;
-  margin-left: 10px;
+  margin-left: 20px;
   user-select: none;
 }
 
@@ -172,4 +194,13 @@ input[type="checkbox"]:focus {
 
 .folder-select-header:hover {
   background-color: #ececec;
+}
+
+/* POPUPS */
+.options-container {
+  position: fixed;
+  background-color: white;
+  border-radius: 0.5rem;
+  padding: 0.5rem;
+  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.2), 0 3px 10px 0 rgba(0, 0, 0, 0.19);
 }
