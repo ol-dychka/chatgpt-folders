@@ -1,14 +1,6 @@
-function attachFolderMenu() {
-  if (!document.querySelector(".custom-folder-menu")) {
-    const folderMenu = createFolderMenu();
-    document.body.appendChild(folderMenu);
-  }
-}
-
-function createFolderMenu() {
+function createFolderMenu(close) {
   const folderMenuContainer = document.createElement("div");
   folderMenuContainer.classList.add("folder-menu-container");
-  folderMenuContainer.classList.add("custom-folder-menu");
 
   const controls = document.createElement("div");
   controls.classList.add("flex-between");
@@ -21,7 +13,7 @@ function createFolderMenu() {
   closeButton.classList.add("styled-button");
   closeButton.textContent = "×";
 
-  closeButton.addEventListener("click", () => handleCloseFolderMenu());
+  closeButton.addEventListener("click", close);
 
   controls.appendChild(label);
   controls.appendChild(closeButton);
@@ -43,9 +35,10 @@ function createFolderMenu() {
   addFolderButton.classList.add("styled-button");
   addFolderButton.textContent = "Add Folder";
 
-  addFolderButton.addEventListener("click", () =>
-    handleAddFolder(nameInput.value, colorInput.value)
-  );
+  addFolderButton.addEventListener("click", () => {
+    handleAddFolder(nameInput.value, colorInput.value);
+    close();
+  });
 
   folderMenuContainer.appendChild(controls);
   folderMenuContainer.appendChild(inputs);
@@ -65,15 +58,7 @@ async function handleAddFolder(name, color) {
     chrome.storage.local.set({
       folders: [...folders, { id: id.toString(), name, color, open: true }],
     });
-    handleCloseFolderMenu();
     updateFolders();
-  }
-}
-
-function handleCloseFolderMenu() {
-  const folderMenu = document.querySelector(".custom-folder-menu");
-  if (folderMenu) {
-    document.body.removeChild(folderMenu);
   }
 }
 

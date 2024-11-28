@@ -14,15 +14,9 @@ function createFolderNode(folder, chatsNode) {
   optionsButton.classList.add("inline-text-button");
   optionsButton.innerText = "•••";
   optionsButton.addEventListener("click", (e) =>
-    attachPopup((close) =>
-      createFolderOptions(
-        folder,
-        folderName,
-        e.clientX,
-        e.clientY,
-        optionsButton,
-        close
-      )
+    attachPopup(
+      (close) => createFolderOptions(folder, folderName, optionsButton, close),
+      e
     )
   );
 
@@ -64,33 +58,27 @@ function createChatNode(chat, folder) {
   link.innerText = chat.name;
   link.target = "_self";
 
-  const deleteButton = document.createElement("button");
-  deleteButton.classList.add("inline-button");
-  deleteButton.textContent = "×";
-  deleteButton.addEventListener("click", () =>
-    handleChatDelete(chat, folder.id, chatNode)
+  const optionsButton = document.createElement("button");
+  optionsButton.classList.add("inline-text-button");
+  optionsButton.innerText = "•••";
+  optionsButton.addEventListener("click", (e) =>
+    attachPopup(
+      (close) => createChatOptions(chat, folder.id, chatNode, close),
+      e
+    )
   );
 
   chatNode.appendChild(link);
-  chatNode.appendChild(deleteButton);
+  chatNode.appendChild(optionsButton);
 
   chatNode.addEventListener("dragstart", (e) => handleDrag(e, chat, folder));
 
   return chatNode;
 }
 
-function createFolderOptions(
-  folder,
-  folderNameNode,
-  x,
-  y,
-  optionsButton,
-  close
-) {
+function createFolderOptions(folder, folderNameNode, optionsButton, close) {
   const container = document.createElement("div");
   container.classList.add("options-container");
-  container.style.top = `${y}px`;
-  container.style.left = `${x}px`;
 
   const editButton = document.createElement("button");
   editButton.classList.add("styled-button");
@@ -109,6 +97,23 @@ function createFolderOptions(
   });
 
   container.appendChild(editButton);
+  container.appendChild(deleteButton);
+
+  return container;
+}
+
+function createChatOptions(chat, folderId, chatNode, close) {
+  const container = document.createElement("div");
+  container.classList.add("options-container");
+
+  const deleteButton = document.createElement("button");
+  deleteButton.classList.add("styled-button");
+  deleteButton.textContent = "Delete";
+  deleteButton.addEventListener("click", () => {
+    handleChatDelete(chat, folderId, chatNode);
+    close();
+  });
+
   container.appendChild(deleteButton);
 
   return container;
@@ -244,7 +249,9 @@ async function getFolders() {
   const createFolderButton = document.createElement("button");
   createFolderButton.classList.add("styled-button");
   createFolderButton.innerText = "Add new folder";
-  createFolderButton.addEventListener("click", () => attachFolderMenu());
+  createFolderButton.addEventListener("click", (e) =>
+    attachPopup((close) => createFolderMenu(close), e)
+  );
 
   const foldersNode = document.createElement("ul");
   foldersNode.classList.add("folders");

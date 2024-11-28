@@ -152,9 +152,6 @@ input[type="checkbox"]:focus {
 
 /* FOLDER MENU */
 .folder-menu-container {
-  position: fixed;
-  top: 50px;
-  left: 260px;
   background-color: #f9f9f9;
   border-radius: 20px;
   padding: 10px;
@@ -171,9 +168,6 @@ input[type="checkbox"]:focus {
 
 /* CHAT MENU */
 .chat-menu-container {
-  position: fixed;
-  bottom: 50px;
-  left: 260px;
   background-color: #f9f9f9;
   border-radius: 20px;
   padding: 10px;
@@ -198,7 +192,6 @@ input[type="checkbox"]:focus {
 
 /* POPUPS */
 .options-container {
-  position: fixed;
   background-color: white;
   border-radius: 0.5rem;
   padding: 0.5rem;

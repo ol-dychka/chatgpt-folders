@@ -1,11 +1,4 @@
-async function attachChatMenu(name, href) {
-  if (!document.querySelector(".custom-chat-menu")) {
-    const chatMenu = await createChatMenu(name, href);
-    document.body.appendChild(chatMenu);
-  }
-}
-
-async function createChatMenu(name, href) {
+async function createChatMenu(name, href, close) {
   let selectedFolders = [];
 
   const addToSelected = (folderId) => {
@@ -18,7 +11,6 @@ async function createChatMenu(name, href) {
 
   const chatMenuContainer = document.createElement("div");
   chatMenuContainer.classList.add("chat-menu-container");
-  chatMenuContainer.classList.add("custom-chat-menu");
 
   const controls = document.createElement("div");
   controls.classList.add("flex-between");
@@ -31,7 +23,7 @@ async function createChatMenu(name, href) {
   closeButton.classList.add("styled-button");
   closeButton.textContent = "×";
 
-  closeButton.addEventListener("click", () => handleCloseChatMenu());
+  closeButton.addEventListener("click", close);
 
   controls.appendChild(label);
   controls.appendChild(closeButton);
@@ -50,6 +42,7 @@ async function createChatMenu(name, href) {
   addChatButton.addEventListener("click", () => {
     console.log(selectedFolders);
     handleAddChat(name, href, selectedFolders);
+    close();
   });
 
   chatMenuContainer.appendChild(controls);
@@ -93,13 +86,5 @@ function handleAddChat(name, href, selectedFolders) {
     if (folder.some((chat) => chat.href === href)) return;
     chrome.storage.local.set({ [folderId]: [...folder, { name, href }] });
   });
-  handleCloseChatMenu();
   updateFolders();
-}
-
-function handleCloseChatMenu() {
-  const chatMenu = document.querySelector(".custom-chat-menu");
-  if (chatMenu) {
-    document.body.removeChild(chatMenu);
-  }
 }

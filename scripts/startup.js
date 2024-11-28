@@ -12,8 +12,11 @@ function appendButtonsToLinks() {
 
       button.addEventListener("click", (e) => {
         e.preventDefault();
-        console.log("clicked");
-        attachChatMenu(link.firstChild.innerText, link.href);
+        attachPopup(
+          (close) =>
+            createChatMenu(link.firstChild.innerText, link.href, close),
+          e
+        );
       });
 
       link.appendChild(button);
