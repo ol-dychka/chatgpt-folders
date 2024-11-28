@@ -2,13 +2,16 @@
 async function attachPopup(createPopup, e) {
   const popup = await createPopup(close);
   popup.style.position = "fixed";
-  popup.style.top = `${e.clientY}px`;
+
+  if (e.clientY < window.innerHeight / 2) popup.style.top = `${e.clientY}px`;
+  else popup.style.bottom = `${window.innerHeight - e.clientY}px`;
+
   popup.style.left = `${e.clientX}px`;
 
   // click outside popup
   const outsideClickListener = (e) => {
     if (!popup.contains(e.target)) {
-      console.log(e.target);
+      console.log(e.clientY);
       close();
     }
   };
