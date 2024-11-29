@@ -1,9 +1,8 @@
 // append "+" buttons to links
 function appendButtonsToLinks() {
   const links = document.querySelectorAll("li > div > a"); // Select all link elements
-
+  // Check if button is already appended to avoid infinite loop
   links.forEach((link) => {
-    // Check if button is already appended to avoid infinite loop
     if (!link.querySelector(".custom-button")) {
       const button = document.createElement("button");
       button.innerText = "+";

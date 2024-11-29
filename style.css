@@ -82,6 +82,10 @@ input[type="checkbox"]:focus {
   box-shadow: none; /* Remove focus box-shadow */
 }
 
+ul li:last-child {
+  margin-bottom: 0.25rem;
+}
+
 /* STARTUP */
 
 .add-chat-button {
@@ -91,10 +95,9 @@ input[type="checkbox"]:focus {
 /* FOLDERS */
 .folder-header {
   display: flex;
-  gap: 5px;
+  gap: 0.5rem;
   align-items: center;
-  padding: 6px 15px;
-  margin-bottom: 5px;
+  padding: 0.5rem 1rem;
   border-radius: 0.5rem;
   transition: filter 0.1s ease;
 }
@@ -134,19 +137,29 @@ input[type="checkbox"]:focus {
   padding: 0 5px;
 }
 
-.chat-header {
+.chat-text {
   display: flex;
   font-size: 14px;
   justify-content: space-between;
   align-items: center;
-  padding: 7px 15px;
-  margin-bottom: 5px;
+  padding: 0.5rem 1rem;
   border-radius: 0.5rem;
-  margin-left: 20px;
+  margin-left: 1rem;
   user-select: none;
+  color: black;
 }
 
-.chat-header:hover {
+.chat-gap {
+  height: 0.25rem;
+  width: 100%;
+  border-radius: 0.125rem;
+}
+
+.chat-gap.dragover {
+  background-color: #5d5d5d;
+}
+
+.chat-text:hover {
   background-color: #ececec;
 }
 
