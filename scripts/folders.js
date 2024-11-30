@@ -6,6 +6,20 @@ function createFolderNode(folder, chatsNode) {
   // folderHeader.style.backgroundColor = folder.color;
   // folderHeader.style.color = getContrastColor(folder.color);
 
+  const gap = document.createElement("div");
+  gap.classList.add("chat-gap");
+
+  gap.addEventListener("dragover", (e) => e.preventDefault(), false);
+  gap.addEventListener(
+    "drop",
+    async (e) => handleDropFolder(e, folder.id),
+    false
+  );
+  gap.addEventListener("dragenter", (e) => e.target.classList.add("dragover"));
+  gap.addEventListener("dragleave", (e) =>
+    e.target.classList.remove("dragover")
+  );
+
   const folderName = document.createElement("div");
   folderName.classList.add("folder-name");
   folderName.innerText = folder.name;
@@ -40,10 +54,21 @@ function createFolderNode(folder, chatsNode) {
   folderHeader.appendChild(toggleButton);
   folderHeader.appendChild(folderName);
   folderHeader.appendChild(optionsButton);
-  folderNode.appendChild(folderHeader);
 
-  folderNode.addEventListener("dragover", (e) => e.preventDefault(), false);
-  folderNode.addEventListener("drop", (e) => handleDrop(e, folder.id), false);
+  folderHeader.draggable = true;
+  folderHeader.addEventListener("dragstart", (e) => {
+    handleDragFolder(e, folder.id);
+  });
+
+  folderHeader.addEventListener("dragover", (e) => e.preventDefault(), false);
+  folderHeader.addEventListener(
+    "drop",
+    (e) => handleDropChat(e, folder.id),
+    false
+  );
+
+  folderNode.appendChild(gap);
+  folderNode.appendChild(folderHeader);
 
   return folderNode;
 }
@@ -51,6 +76,7 @@ function createFolderNode(folder, chatsNode) {
 function createChatNode(chat, folder) {
   const chatNode = document.createElement("li");
   const chatHeader = document.createElement("div");
+  chatHeader.classList.add("chat-header");
   const chatText = document.createElement("div");
   chatText.classList.add("chat-text");
   chatText.draggable = true;
@@ -72,9 +98,9 @@ function createChatNode(chat, folder) {
 
   chatText.appendChild(link);
   chatText.appendChild(optionsButton);
-  chatText.addEventListener("dragstart", (e) => handleDrag(e, chat, folder));
-
-  chatHeader.appendChild(chatText);
+  chatText.addEventListener("dragstart", (e) =>
+    handleDragChat(e, chat, folder)
+  );
 
   const gap = document.createElement("div");
   gap.classList.add("chat-gap");
@@ -82,7 +108,7 @@ function createChatNode(chat, folder) {
   gap.addEventListener("dragover", (e) => e.preventDefault(), false);
   gap.addEventListener(
     "drop",
-    async (e) => handleDrop(e, folder.id, chat),
+    async (e) => handleDropChat(e, folder.id, chat),
     false
   );
   gap.addEventListener("dragenter", (e) => e.target.classList.add("dragover"));
@@ -90,100 +116,11 @@ function createChatNode(chat, folder) {
     e.target.classList.remove("dragover")
   );
 
-  chatNode.appendChild(gap);
+  chatHeader.appendChild(gap);
+  chatHeader.appendChild(chatText);
   chatNode.appendChild(chatHeader);
 
   return chatNode;
-}
-
-function createFolderOptions(folder, folderNameNode, optionsButton, close) {
-  const container = document.createElement("div");
-  container.classList.add("options-container");
-
-  const editButton = document.createElement("button");
-  editButton.classList.add("styled-button");
-  editButton.innerText = "Edit";
-  editButton.addEventListener("click", () => {
-    handleEditFolderName(folderNameNode, editButton, optionsButton);
-    close();
-  });
-
-  const deleteButton = document.createElement("button");
-  deleteButton.classList.add("styled-button");
-  deleteButton.innerText = "Delete";
-  deleteButton.addEventListener("click", () => {
-    handleDeleteFolder(folder.id);
-    close();
-  });
-
-  container.appendChild(editButton);
-  container.appendChild(deleteButton);
-
-  return container;
-}
-
-function createChatOptions(chat, folderId, chatNode, close) {
-  const container = document.createElement("div");
-  container.classList.add("options-container");
-
-  const deleteButton = document.createElement("button");
-  deleteButton.classList.add("styled-button");
-  deleteButton.textContent = "Delete";
-  deleteButton.addEventListener("click", () => {
-    handleChatDelete(chat, folderId, chatNode);
-    close();
-  });
-
-  container.appendChild(deleteButton);
-
-  return container;
-}
-
-async function handleDeleteFolder(id) {
-  const { folders = [] } = await chrome.storage.local.get("folders");
-
-  chrome.storage.local.set({
-    folders: folders.filter((f) => f.id !== id),
-  });
-  chrome.storage.local.remove([id]);
-
-  updateFolders();
-}
-
-async function handleEditFolderName(folderNameNode, editButton, optionsButton) {
-  optionsButton.disabled = true;
-  const { folders = [] } = await chrome.storage.local.get("folders");
-  const oldName = folderNameNode.innerText;
-
-  const input = document.createElement("input");
-  input.classList.add("styled-inline-input");
-  input.value = oldName;
-
-  const saveButton = document.createElement("button");
-  saveButton.classList.add("inline-text-button");
-  saveButton.textContent = "Save";
-
-  editButton.disabled = true;
-
-  folderNameNode.innerText = null;
-  folderNameNode.appendChild(input);
-  folderNameNode.appendChild(saveButton);
-
-  saveButton.addEventListener("click", () => {
-    folderNameNode.removeChild(folderNameNode.firstChild);
-    folderNameNode.removeChild(folderNameNode.firstChild);
-    editButton.disabled = false;
-    const newName = input.value;
-    folderNameNode.innerText = newName;
-
-    chrome.storage.local.set({
-      folders: folders.map((f) =>
-        f.name === oldName ? { ...f, name: newName } : f
-      ),
-    });
-
-    optionsButton.disabled = false;
-  });
 }
 
 async function toggleFolder(folder, toggleOpenButton, folderHeader, chatsNode) {
@@ -204,95 +141,6 @@ async function toggleFolder(folder, toggleOpenButton, folderHeader, chatsNode) {
       f.id === folder.id ? { ...f, open: folder.open } : f
     ),
   });
-}
-
-async function handleChatDelete(chat, folderId, chatNode) {
-  const { [folderId]: targetFolder = [] } = await chrome.storage.local.get([
-    folderId,
-  ]);
-
-  await chrome.storage.local.set({
-    [folderId]: targetFolder.filter((x) => x.href !== chat.href),
-  });
-
-  chatNode.parentNode.removeChild(chatNode);
-}
-
-let isDropping = false;
-async function handleDrop(e, destinationFolderId, destinationChat) {
-  if (isDropping) return;
-  isDropping = true;
-  e.preventDefault();
-  console.log("destCHat:", destinationChat);
-
-  const sourceFolderId = e.dataTransfer.getData("sourceFolderId");
-  const draggedChatName = e.dataTransfer.getData("chatName");
-  const draggedChatHref = e.dataTransfer.getData("chatHref");
-  const draggedChat = {
-    href: draggedChatHref,
-    name: draggedChatName,
-  };
-
-  // if chat was dropped within its folder (replaced)
-  if (sourceFolderId === destinationFolderId) {
-    await handleDropSameFolder(sourceFolderId, draggedChat, destinationChat);
-  } else {
-    const { [destinationFolderId]: destinationFolder = [] } =
-      await chrome.storage.local.get([destinationFolderId]);
-
-    const { [sourceFolderId]: sourceFolder = [] } =
-      await chrome.storage.local.get([sourceFolderId]);
-
-    let pushIndex = destinationFolder.length;
-    for (let i = 0; i < destinationFolder.length; i++) {
-      // if chat was dragged onto another chat we want to place it before
-      if (destinationFolder[i].href === destinationChat?.href) {
-        pushIndex = i;
-        console.log("pushed on:", i);
-      }
-      //duplicate
-      if (destinationFolder[i].href === draggedChatHref) return;
-    }
-
-    chrome.storage.local.set({
-      [sourceFolderId]: sourceFolder.filter((x) => x.href !== draggedChatHref),
-    });
-
-    destinationFolder.splice(pushIndex, 0, draggedChat);
-    console.log(destinationFolder);
-
-    await chrome.storage.local.set({
-      [destinationFolderId]: destinationFolder,
-    });
-  }
-  updateFolders();
-  e.target.classList.remove("dragover");
-  isDropping = false;
-}
-
-async function handleDropSameFolder(folderId, draggedChat, destinationChat) {
-  let { [folderId]: folder = [] } = await chrome.storage.local.get([folderId]);
-
-  let pushIndex = folder.length;
-  for (let i = 0; i < folder.length; i++) {
-    // if chat was dragged onto another chat we want to place it before
-    // if chat was dragged on a folder (we don't have destinationChat)
-    // pushIndex remains as the last index
-    if (folder[i].href === destinationChat?.href) pushIndex = i;
-  }
-
-  folder = folder.filter((x) => x.href !== draggedChat.href);
-  folder.splice(pushIndex, 0, draggedChat);
-
-  chrome.storage.local.set({
-    [folderId]: folder,
-  });
-}
-
-function handleDrag(e, chat, folder) {
-  e.dataTransfer.setData("chatName", chat.name);
-  e.dataTransfer.setData("chatHref", chat.href);
-  e.dataTransfer.setData("sourceFolderId", folder.id);
 }
 
 async function getFolders() {
