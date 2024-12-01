@@ -176,9 +176,45 @@ async function getFolders() {
       chatsNode.appendChild(chatNode);
     });
 
+    const lastChatGap = document.createElement("div");
+    lastChatGap.classList.add("chat-gap-li");
+
+    lastChatGap.addEventListener("dragover", (e) => e.preventDefault(), false);
+    lastChatGap.addEventListener(
+      "drop",
+      async (e) => handleDropChat(e, folder.id),
+      false
+    );
+    lastChatGap.addEventListener("dragenter", (e) =>
+      e.target.classList.add("dragover")
+    );
+    lastChatGap.addEventListener("dragleave", (e) =>
+      e.target.classList.remove("dragover")
+    );
+
+    chatsNode.appendChild(lastChatGap);
+
     folderNode.appendChild(chatsNode);
     foldersNode.appendChild(folderNode);
   });
+
+  const lastFolderGap = document.createElement("div");
+  lastFolderGap.classList.add("chat-gap");
+
+  lastFolderGap.addEventListener("dragover", (e) => e.preventDefault(), false);
+  lastFolderGap.addEventListener(
+    "drop",
+    async (e) => handleDropFolder(e),
+    false
+  );
+  lastFolderGap.addEventListener("dragenter", (e) =>
+    e.target.classList.add("dragover")
+  );
+  lastFolderGap.addEventListener("dragleave", (e) =>
+    e.target.classList.remove("dragover")
+  );
+
+  foldersNode.appendChild(lastFolderGap);
 
   foldersContainer.appendChild(foldersLabel);
   foldersContainer.appendChild(foldersNode);

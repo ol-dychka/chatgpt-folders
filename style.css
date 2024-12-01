@@ -155,7 +155,18 @@ ul li:last-child {
 .chat-gap {
   height: 0.5rem;
   /* width: 100%;  */
-  border-radius: 0.25rem;
+  border-radius: 0.125rem;
+}
+
+.chat-gap-li {
+  height: 0.5rem;
+  margin-left: 1rem;
+  /* width: 100%;  */
+  border-radius: 0.125rem;
+}
+
+.chat-gap-li.dragover {
+  border: #5d5d5d dashed 2px;
 }
 
 .chat-gap.dragover {

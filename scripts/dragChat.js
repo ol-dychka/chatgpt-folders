@@ -2,31 +2,33 @@ let isChatDropping = false;
 async function handleDropChat(e, destinationFolderId, destinationChat) {
   if (isChatDropping) return;
   isChatDropping = true;
-
   e.preventDefault();
 
-  const sourceFolderId = e.dataTransfer.getData("sourceFolderId");
-  const draggedChatName = e.dataTransfer.getData("chatName");
-  const draggedChatHref = e.dataTransfer.getData("chatHref");
-  const draggedChat = {
-    href: draggedChatHref,
-    name: draggedChatName,
-  };
+  const type = e.dataTransfer.getData("type");
+  if (type === "chat") {
+    const sourceFolderId = e.dataTransfer.getData("sourceFolderId");
+    const draggedChatName = e.dataTransfer.getData("chatName");
+    const draggedChatHref = e.dataTransfer.getData("chatHref");
+    const draggedChat = {
+      href: draggedChatHref,
+      name: draggedChatName,
+    };
 
-  if (sourceFolderId === destinationFolderId) {
-    await dropChatInSameFolder(sourceFolderId, draggedChat, destinationChat);
-  } else {
-    await dropChatInDifferentFolder(
-      sourceFolderId,
-      destinationFolderId,
-      draggedChat,
-      destinationChat
-    );
+    if (sourceFolderId === destinationFolderId) {
+      await dropChatInSameFolder(sourceFolderId, draggedChat, destinationChat);
+    } else {
+      await dropChatInDifferentFolder(
+        sourceFolderId,
+        destinationFolderId,
+        draggedChat,
+        destinationChat
+      );
+    }
+
+    updateFolders();
+    isChatDropping = false;
   }
-
-  updateFolders();
   e.target.classList.remove("dragover");
-  isChatDropping = false;
 }
 
 async function dropChatInDifferentFolder(
@@ -94,6 +96,7 @@ async function dropChatInSameFolder(folderId, draggedChat, destinationChat) {
 }
 
 function handleDragChat(e, chat, folder) {
+  e.dataTransfer.setData("type", "chat");
   e.dataTransfer.setData("chatName", chat.name);
   e.dataTransfer.setData("chatHref", chat.href);
   e.dataTransfer.setData("sourceFolderId", folder.id);
