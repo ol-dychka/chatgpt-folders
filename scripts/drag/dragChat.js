@@ -43,12 +43,12 @@ async function dropChatInDifferentFolder(
   const { [sourceFolderId]: sourceFolder = [] } =
     await chrome.storage.local.get([sourceFolderId]);
 
-  let pushIndex = destinationFolder.length;
+  let pushIndex = 0;
   for (let i = 0; i < destinationFolder.length; i++) {
-    // if chat was dragged onto another chat we want to place it before
+    // if chat was dragged onto another chat we want to place it after
     if (destinationFolder[i].href === destinationChat?.href) {
-      pushIndex = i;
-      console.log("pushed on:", i);
+      pushIndex = i + 1;
+      console.log("pushed on:", i + 1);
     }
     // checking for duplicate
     if (destinationFolder[i].href === draggedChat.href) return;
@@ -76,19 +76,18 @@ async function dropChatInSameFolder(folderId, draggedChat, destinationChat) {
   let draggedIndex, destinationIndex;
   for (let i = 0; i < folder.length; i++) {
     if (folder[i].href === draggedChat.href) draggedIndex = i;
-    if (folder[i].href === destinationChat?.href) destinationIndex = i;
+    if (folder[i].href === destinationChat?.href) destinationIndex = i + 1;
   }
 
-  // check if destination index exists
-  if (destinationIndex >= 0) {
-    if (draggedIndex < destinationIndex) destinationIndex--;
-  } else {
-    destinationIndex = folder.length - 1;
-  }
-  console.log(destinationIndex);
+  if (!(destinationIndex >= 0)) destinationIndex = 0;
 
-  folder = folder.filter((x) => x.href !== draggedChat.href);
+  // adding
   folder.splice(destinationIndex, 0, draggedChat);
+
+  // deleting
+  draggedIndex > destinationIndex
+    ? folder.splice(draggedIndex + 1, 1)
+    : folder.splice(draggedIndex, 1);
 
   chrome.storage.local.set({
     [folderId]: folder,

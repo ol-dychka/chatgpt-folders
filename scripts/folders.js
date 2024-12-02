@@ -1,4 +1,4 @@
-function createFolderNode(folder, chatsNode) {
+function createFolderNode(folder, folderIndex, chatsNode) {
   const folderNode = document.createElement("li");
 
   const folderHeader = document.createElement("div");
@@ -73,10 +73,12 @@ function createFolderNode(folder, chatsNode) {
   return folderNode;
 }
 
-function createChatNode(chat, folder) {
+function createChatNode(chat, chatIndex, folder) {
   const chatNode = document.createElement("li");
+
   const chatHeader = document.createElement("div");
   chatHeader.classList.add("chat-header");
+
   const chatText = document.createElement("div");
   chatText.classList.add("chat-text");
   chatText.draggable = true;
@@ -102,22 +104,19 @@ function createChatNode(chat, folder) {
     handleDragChat(e, chat, folder)
   );
 
-  const gap = document.createElement("div");
-  gap.classList.add("chat-gap");
+  if (chatIndex === 0) {
+    const firstDropzone = createDropzone(true, (e) =>
+      handleDropChat(e, folder.id)
+    );
+    chatHeader.appendChild(firstDropzone);
+  }
 
-  gap.addEventListener("dragover", (e) => e.preventDefault(), false);
-  gap.addEventListener(
-    "drop",
-    async (e) => handleDropChat(e, folder.id, chat),
-    false
-  );
-  gap.addEventListener("dragenter", (e) => e.target.classList.add("dragover"));
-  gap.addEventListener("dragleave", (e) =>
-    e.target.classList.remove("dragover")
-  );
-
-  chatHeader.appendChild(gap);
   chatHeader.appendChild(chatText);
+
+  const dropzone = createDropzone(false, (e) =>
+    handleDropChat(e, folder.id, chat)
+  );
+  chatHeader.appendChild(dropzone);
   chatNode.appendChild(chatHeader);
 
   return chatNode;
@@ -163,62 +162,32 @@ async function getFolders() {
   const foldersNode = document.createElement("ul");
   foldersNode.classList.add("folders");
 
-  folders.forEach(async (folder) => {
+  folders.forEach(async (folder, folderIndex) => {
     const chatsNode = document.createElement("ul");
-    const folderNode = createFolderNode(folder, chatsNode, folders);
+    const folderNode = createFolderNode(
+      folder,
+      folderIndex,
+      chatsNode,
+      folders
+    );
     chatsNode.hidden = !folder.open;
 
     const { [folder.id]: chats = [] } = await chrome.storage.local.get([
       folder.id,
     ]);
-    chats.forEach((chat) => {
-      const chatNode = createChatNode(chat, folder);
+    chats.forEach((chat, chatIndex) => {
+      const chatNode = createChatNode(chat, chatIndex, folder);
       chatsNode.appendChild(chatNode);
     });
-
-    const lastChatGap = document.createElement("div");
-    lastChatGap.classList.add("chat-gap-li");
-
-    lastChatGap.addEventListener("dragover", (e) => e.preventDefault(), false);
-    lastChatGap.addEventListener(
-      "drop",
-      async (e) => handleDropChat(e, folder.id),
-      false
-    );
-    lastChatGap.addEventListener("dragenter", (e) =>
-      e.target.classList.add("dragover")
-    );
-    lastChatGap.addEventListener("dragleave", (e) =>
-      e.target.classList.remove("dragover")
-    );
-
-    chatsNode.appendChild(lastChatGap);
 
     folderNode.appendChild(chatsNode);
     foldersNode.appendChild(folderNode);
   });
 
-  const lastFolderGap = document.createElement("div");
-  lastFolderGap.classList.add("chat-gap");
-
-  lastFolderGap.addEventListener("dragover", (e) => e.preventDefault(), false);
-  lastFolderGap.addEventListener(
-    "drop",
-    async (e) => handleDropFolder(e),
-    false
-  );
-  lastFolderGap.addEventListener("dragenter", (e) =>
-    e.target.classList.add("dragover")
-  );
-  lastFolderGap.addEventListener("dragleave", (e) =>
-    e.target.classList.remove("dragover")
-  );
-
-  foldersNode.appendChild(lastFolderGap);
-
   foldersContainer.appendChild(foldersLabel);
   foldersContainer.appendChild(foldersNode);
   foldersContainer.appendChild(createFolderButton);
+
   return foldersContainer;
 }
 

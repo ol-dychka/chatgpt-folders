@@ -13,10 +13,10 @@ async function handleDropFolder(e, destinationFolderId) {
     let draggedIndex, destinationIndex;
     for (let i = 0; i < folders.length; i++) {
       if (folders[i].id === draggedFolderId) draggedIndex = i;
-      if (folders[i].id === destinationFolderId) destinationIndex = i;
+      if (folders[i].id === destinationFolderId) destinationIndex = i + 1;
     }
     console.log(draggedIndex, destinationIndex);
-    if (!(destinationIndex >= 0)) destinationIndex = folders.length - 1;
+    if (!(destinationIndex >= 0)) destinationIndex = 0;
 
     // adding
     folders.splice(destinationIndex, 0, draggedFolder);
