@@ -1,24 +1,11 @@
 function createFolderNode(folder, folderIndex, chatsNode) {
   const folderNode = document.createElement("li");
+  folderNode.style.position = "relative";
 
   const folderHeader = document.createElement("div");
   folderHeader.classList.add("folder-header");
   // folderHeader.style.backgroundColor = folder.color;
   // folderHeader.style.color = getContrastColor(folder.color);
-
-  const gap = document.createElement("div");
-  gap.classList.add("chat-gap");
-
-  gap.addEventListener("dragover", (e) => e.preventDefault(), false);
-  gap.addEventListener(
-    "drop",
-    async (e) => handleDropFolder(e, folder.id),
-    false
-  );
-  gap.addEventListener("dragenter", (e) => e.target.classList.add("dragover"));
-  gap.addEventListener("dragleave", (e) =>
-    e.target.classList.remove("dragover")
-  );
 
   const folderName = document.createElement("div");
   folderName.classList.add("folder-name");
@@ -63,21 +50,34 @@ function createFolderNode(folder, folderIndex, chatsNode) {
   folderHeader.addEventListener("dragover", (e) => e.preventDefault(), false);
   folderHeader.addEventListener(
     "drop",
-    (e) => handleDropChat(e, folder.id),
+    (e) => handleDropToFolder(e, folder.id),
     false
   );
 
-  folderNode.appendChild(gap);
+  if (folderIndex === 0) {
+    const firstDropzone = createDropzone(
+      true,
+      (e) => handleDropFolder(e),
+      true
+    );
+    folderNode.appendChild(firstDropzone);
+  }
   folderNode.appendChild(folderHeader);
+  const dropzone = createDropzone(
+    false,
+    (e) => handleDropFolder(e, folder.id),
+    true
+  );
+  folderNode.appendChild(dropzone);
 
   return folderNode;
 }
 
 function createChatNode(chat, chatIndex, folder) {
   const chatNode = document.createElement("li");
+  chatNode.style.position = "relative";
 
   const chatHeader = document.createElement("div");
-  chatHeader.classList.add("chat-header");
 
   const chatText = document.createElement("div");
   chatText.classList.add("chat-text");
@@ -104,20 +104,19 @@ function createChatNode(chat, chatIndex, folder) {
     handleDragChat(e, chat, folder)
   );
 
-  if (chatIndex === 0) {
-    const firstDropzone = createDropzone(true, (e) =>
-      handleDropChat(e, folder.id)
-    );
-    chatHeader.appendChild(firstDropzone);
-  }
-
   chatHeader.appendChild(chatText);
 
-  const dropzone = createDropzone(false, (e) =>
-    handleDropChat(e, folder.id, chat)
-  );
-  chatHeader.appendChild(dropzone);
+  if (chatIndex === 0) {
+    const firstDropzone = createDropzone(true, (e) =>
+      handleDropToFolder(e, folder.id)
+    );
+    chatNode.appendChild(firstDropzone);
+  }
   chatNode.appendChild(chatHeader);
+  const dropzone = createDropzone(false, (e) =>
+    handleDropToFolder(e, folder.id, chat)
+  );
+  chatNode.appendChild(dropzone);
 
   return chatNode;
 }

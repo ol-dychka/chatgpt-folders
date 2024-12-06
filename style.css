@@ -138,12 +138,8 @@ ul > li:last-child {
   padding: 0 5px;
 }
 
-.chat-header {
-  position: relative;
-  margin-left: 1rem;
-}
-
 .chat-text {
+  margin-left: 1rem;
   display: flex;
   font-size: 14px;
   justify-content: space-between;

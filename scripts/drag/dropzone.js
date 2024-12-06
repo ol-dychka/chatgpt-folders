@@ -1,6 +1,7 @@
-function createDropzone(isTop, handleDrop) {
+function createDropzone(isTop, handleDrop, isFolder) {
   const dropzone = document.createElement("div");
   dropzone.classList.add(isTop ? "dropzone-top" : "dropzone-bottom");
+  if (isFolder) dropzone.style.borderColor = "green";
 
   dropzone.addEventListener("drop", (e) => handleDrop(e), false);
 

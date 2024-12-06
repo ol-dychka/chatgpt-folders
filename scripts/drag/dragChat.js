@@ -4,30 +4,27 @@ async function handleDropChat(e, destinationFolderId, destinationChat) {
   isChatDropping = true;
   e.preventDefault();
 
-  const type = e.dataTransfer.getData("type");
-  if (type === "chat") {
-    const sourceFolderId = e.dataTransfer.getData("sourceFolderId");
-    const draggedChatName = e.dataTransfer.getData("chatName");
-    const draggedChatHref = e.dataTransfer.getData("chatHref");
-    const draggedChat = {
-      href: draggedChatHref,
-      name: draggedChatName,
-    };
+  const sourceFolderId = e.dataTransfer.getData("sourceFolderId");
+  const draggedChatName = e.dataTransfer.getData("chatName");
+  const draggedChatHref = e.dataTransfer.getData("chatHref");
+  const draggedChat = {
+    href: draggedChatHref,
+    name: draggedChatName,
+  };
 
-    if (sourceFolderId === destinationFolderId) {
-      await dropChatInSameFolder(sourceFolderId, draggedChat, destinationChat);
-    } else {
-      await dropChatInDifferentFolder(
-        sourceFolderId,
-        destinationFolderId,
-        draggedChat,
-        destinationChat
-      );
-    }
-
-    updateFolders();
-    isChatDropping = false;
+  if (sourceFolderId === destinationFolderId) {
+    await dropChatInSameFolder(sourceFolderId, draggedChat, destinationChat);
+  } else {
+    await dropChatInDifferentFolder(
+      sourceFolderId,
+      destinationFolderId,
+      draggedChat,
+      destinationChat
+    );
   }
+
+  updateFolders();
+  isChatDropping = false;
   e.target.classList.remove("dragover");
 }
 

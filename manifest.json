@@ -10,6 +10,7 @@
       "js": [
         "scripts/popup.js",
         "scripts/drag/dropzone.js",
+        "scripts/drag/dropToFolder.js",
         "scripts/drag/dragChat.js",
         "scripts/drag/dragFolder.js",
         "scripts/chatOptions.js",
