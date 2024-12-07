@@ -51,13 +51,10 @@ async function handleAddFolder(name, color) {
   if (/\S/.test(name)) {
     // string is not empty and not just whitespace
     const { folders = [] } = await chrome.storage.local.get("folders");
-    const lastItem = folders[folders.length - 1];
-    const id = lastItem ? parseInt(lastItem.id) + 1 : 0;
-    if (folders.some((folder) => folder.name === name)) return;
+    const id = generateUniqueId();
 
-    chrome.storage.local.set({
-      folders: [...folders, { id: id.toString(), name, color, open: true }],
-    });
+    folders.unshift({ id: id.toString(), name, color, open: true });
+    chrome.storage.local.set({ folders: folders });
     updateFolders();
   }
 }
@@ -67,4 +64,8 @@ function generateHexCode() {
     "#" + ((Math.random() * 0xffffff) << 0).toString(16).padStart(6, "0");
   console.log(res);
   return res;
+}
+
+function generateUniqueId() {
+  return "id-" + Date.now() + "-" + Math.random().toString(36).substring(2, 9);
 }

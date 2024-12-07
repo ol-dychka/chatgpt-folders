@@ -162,24 +162,7 @@ async function getFolders() {
   foldersNode.classList.add("folders");
 
   folders.forEach(async (folder, folderIndex) => {
-    const chatsNode = document.createElement("ul");
-    const folderNode = createFolderNode(
-      folder,
-      folderIndex,
-      chatsNode,
-      folders
-    );
-    chatsNode.hidden = !folder.open;
-
-    const { [folder.id]: chats = [] } = await chrome.storage.local.get([
-      folder.id,
-    ]);
-    chats.forEach((chat, chatIndex) => {
-      const chatNode = createChatNode(chat, chatIndex, folder);
-      chatsNode.appendChild(chatNode);
-    });
-
-    folderNode.appendChild(chatsNode);
+    const folderNode = await iterateFolder(folder, folderIndex, folders, 1);
     foldersNode.appendChild(folderNode);
   });
 
@@ -188,6 +171,44 @@ async function getFolders() {
   foldersContainer.appendChild(createFolderButton);
 
   return foldersContainer;
+}
+
+async function iterateFolder(folder, folderIndex, folders, indent) {
+  let childrenNode = document.createElement("ul");
+  const folderNode = createFolderNode(
+    folder,
+    folderIndex,
+    childrenNode,
+    folders
+  );
+  childrenNode.hidden = !folder.open;
+
+  // getting all folders inside
+  if (folder.children) {
+    folder.children.forEach(async (childFolder, childFolderIndex) => {
+      const childFolderNode = await iterateFolder(
+        childFolder,
+        childFolderIndex,
+        folders,
+        indent + 1
+      );
+      childrenNode.appendChild(childFolderNode);
+    });
+  }
+
+  // getting chats
+  const { [folder.id]: chats = [] } = await chrome.storage.local.get([
+    folder.id,
+  ]);
+  chats.forEach((chat, chatIndex) => {
+    const chatNode = createChatNode(chat, chatIndex, folder);
+    childrenNode.appendChild(chatNode);
+  });
+
+  folderNode.appendChild(childrenNode);
+  folderNode.style.marginLeft = `${indent * 0.5}rem`;
+
+  return folderNode;
 }
 
 async function updateFolders() {

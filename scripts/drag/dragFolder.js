@@ -1,36 +1,39 @@
 let isFolderDropping = false;
+// handles drop in-between folders
 async function handleDropFolder(e, destinationFolderId) {
-  if (isFolderDropping) return;
-  isFolderDropping = true;
-
   const type = e.dataTransfer.getData("type");
   if (type === "folder") {
+    if (isFolderDropping) return;
+    isFolderDropping = true;
+
     const draggedFolderId = e.dataTransfer.getData("draggedFolderId");
+    if (draggedFolderId === destinationFolderId) return;
+
     let { folders = [] } = await chrome.storage.local.get("folders");
-    const draggedFolder = folders.find((x) => x.id === draggedFolderId);
-    console.log(draggedFolder);
 
-    let draggedIndex, destinationIndex;
-    for (let i = 0; i < folders.length; i++) {
-      if (folders[i].id === draggedFolderId) draggedIndex = i;
-      if (folders[i].id === destinationFolderId) destinationIndex = i + 1;
-    }
-    console.log(draggedIndex, destinationIndex);
-    if (!(destinationIndex >= 0)) destinationIndex = 0;
+    // get dragged folder
+    const draggedFolder = getFolderFromFolders(folders, draggedFolderId);
 
-    // adding
-    folders.splice(destinationIndex, 0, draggedFolder);
+    // remove dragged folder from folder tree
+    folders = removeFolderFromFolders(folders, draggedFolderId);
 
-    // deleting
-    draggedIndex > destinationIndex
-      ? folders.splice(draggedIndex + 1, 1)
-      : folders.splice(draggedIndex, 1);
+    // get parent folder of a "destination" folder
+    const parentFolder = getParentFromFolders(folders, destinationFolderId);
+    console.log(parentFolder);
+
+    const destinationIndex = parentFolder.children.findIndex(
+      (child) => child.id === destinationFolderId
+    );
+    parentFolder.children.splice(destinationIndex + 1, 0, draggedFolder);
+
+    folders = replaceFolderInFolders(folders, parentFolder.id, parentFolder);
+    console.log(folders);
 
     chrome.storage.local.set({ folders: folders });
-
     updateFolders();
     isFolderDropping = false;
   }
+
   e.target.classList.remove("dragover");
 }
 
@@ -39,54 +42,93 @@ function handleDragFolder(e, folderId) {
   e.dataTransfer.setData("draggedFolderId", folderId);
 }
 
-let isFolderToFolderDropping = false;
 async function handleDropFolderToFolder(e, destinationFolderId) {
-  if (isFolderToFolderDropping) return;
-  isFolderToFolderDropping = true;
+  if (isFolderDropping) return;
+  isFolderDropping = true;
 
   const draggedFolderId = e.dataTransfer.getData("draggedFolderId");
   let { folders = [] } = await chrome.storage.local.get("folders");
+
+  const folder = getFolderFromFolders(folders, draggedFolderId);
+
+  folders = removeFolderFromFolders(folders, draggedFolderId);
+
+  folders = addFolderToFolders(folders, destinationFolderId, folder);
   console.log(folders);
-  console.log("folder in folder Drop");
-
-  const folder = await getFromFolder(folders, draggedFolderId);
-  console.log("folder:", folder);
-
-  folders = await removeFromFolder(folders, draggedFolderId);
-  console.log("foldersRemoved:", folders);
-
-  folders = await addToFolder(folders, destinationFolderId, folder);
-  console.log("foldersAdded:", folders);
 
   chrome.storage.local.set({ folders: folders });
   updateFolders();
-
-  isFolderToFolderDropping = false;
+  isFolderDropping = false;
 }
 
-function getFromFolder(folders, folderId) {
-  for (let i = 0; i < folders.length; i++) {
-    if (folders[i].id === folderId) return folders[i];
-    if (folders[i].children) return searchFolder(folders[i].children, folderId);
-  }
-}
+function getFolderFromFolders(folders, targetFolderId) {
+  for (let folder of folders) {
+    if (folder.id === targetFolderId) return folder;
 
-function removeFromFolder(folders, folderId) {
-  for (let i = 0; i < folders.length; i++) {
-    if (folders[i].id === folderId) {
-      folders.splice(i, 1);
-      return folders;
+    if (folder.children && folder.children.length > 0) {
+      const result = getFolderFromFolders(folder.children, targetFolderId);
+      if (result) return result;
     }
-    if (folders[i].children) return searchFolder(folders[i].children, folderId);
   }
+  return null;
 }
 
-function addToFolder(folders, folderId, folder) {
-  for (let i = 0; i < folders.length; i++) {
-    if (folders[i].id === folderId) {
-      folders[i].children = [...(folders[i].children || []), folder];
-      return folders;
+function removeFolderFromFolders(folders, targetFolderId) {
+  return folders.filter((folder) => {
+    if (folder.id === targetFolderId) return false;
+
+    if (folder.children && folder.children.length > 0) {
+      folder.children = removeFolderFromFolders(
+        folder.children,
+        targetFolderId
+      );
     }
-    if (folders[i].children) return searchFolder(folders[i].children, folderId);
+
+    return true;
+  });
+}
+
+function addFolderToFolders(folders, destinationFolderId, newFolder) {
+  folders.forEach((folder) => {
+    if (folder.id === destinationFolderId) {
+      if (!folder.children) folder.children = [];
+      folder.children.unshift(newFolder);
+    }
+
+    if (folder.children && folder.children.length > 0) {
+      addFolderToFolders(folder.children, destinationFolderId, newFolder);
+    }
+  });
+
+  return folders;
+}
+
+function getParentFromFolders(folders, targetFolderId) {
+  for (let folder of folders) {
+    if (folder.children && folder.children.length > 0) {
+      if (folder.children.some((child) => child.id === targetFolderId))
+        return folder;
+
+      // else
+      const result = getParentFromFolders(folder.children, targetFolderId);
+      if (result) return result;
+    }
   }
+  return null;
+}
+
+function replaceFolderInFolders(folders, targetFolderId, newFolder) {
+  return folders.map((folder) => {
+    if (folder.id === targetFolderId) return newFolder;
+
+    if (folder.children && folder.children.length > 0) {
+      folder.children = replaceFolderInFolders(
+        folder.children,
+        targetFolderId,
+        newFolder
+      );
+    }
+
+    return folder;
+  });
 }
