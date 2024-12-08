@@ -6,7 +6,7 @@ function createFolderOptions(folder, folderNameNode, optionsButton, close) {
   editButton.classList.add("styled-button");
   editButton.innerText = "Edit";
   editButton.addEventListener("click", () => {
-    handleEditFolderName(folderNameNode, editButton, optionsButton);
+    handleEditFolderName(folderNameNode, editButton, optionsButton, folder.id);
     close();
   });
 
@@ -25,19 +25,25 @@ function createFolderOptions(folder, folderNameNode, optionsButton, close) {
 }
 
 async function handleDeleteFolder(id) {
-  const { folders = [] } = await chrome.storage.local.get("folders");
+  let { folders = [] } = await chrome.storage.local.get("folders");
 
-  chrome.storage.local.set({
-    folders: folders.filter((f) => f.id !== id),
-  });
+  folders = removeFolderFromFolders(folders, id);
+  chrome.storage.local.set({ folders: folders });
   chrome.storage.local.remove([id]);
 
   updateFolders();
 }
 
-async function handleEditFolderName(folderNameNode, editButton, optionsButton) {
+async function handleEditFolderName(
+  folderNameNode,
+  editButton,
+  optionsButton,
+  folderId
+) {
   optionsButton.disabled = true;
-  const { folders = [] } = await chrome.storage.local.get("folders");
+  let { folders = [] } = await chrome.storage.local.get("folders");
+  let folder = getFolderFromFolders(folders, folderId);
+
   const oldName = folderNameNode.innerText;
 
   const input = document.createElement("input");
@@ -61,11 +67,9 @@ async function handleEditFolderName(folderNameNode, editButton, optionsButton) {
     const newName = input.value;
     folderNameNode.innerText = newName;
 
-    chrome.storage.local.set({
-      folders: folders.map((f) =>
-        f.name === oldName ? { ...f, name: newName } : f
-      ),
-    });
+    folder.name = newName;
+    folders = replaceFolderInFolders(folders, folder.id, folder);
+    chrome.storage.local.set({ folders: folders });
 
     optionsButton.disabled = false;
   });

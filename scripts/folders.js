@@ -122,7 +122,7 @@ function createChatNode(chat, chatIndex, folder) {
 }
 
 async function toggleFolder(folder, toggleOpenButton, folderHeader, chatsNode) {
-  const { folders = [] } = await chrome.storage.local.get("folders");
+  let { folders = [] } = await chrome.storage.local.get("folders");
 
   folder.open = !folder.open;
   chatsNode.hidden = !chatsNode.hidden;
@@ -134,11 +134,9 @@ async function toggleFolder(folder, toggleOpenButton, folderHeader, chatsNode) {
     folderHeader.classList.remove("folder-header-open");
   }
 
-  chrome.storage.local.set({
-    folders: folders.map((f) =>
-      f.id === folder.id ? { ...f, open: folder.open } : f
-    ),
-  });
+  folders = replaceFolderInFolders(folders, folder.id, folder);
+
+  chrome.storage.local.set({ folders: folders });
 }
 
 async function getFolders() {

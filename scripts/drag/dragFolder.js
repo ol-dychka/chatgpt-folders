@@ -49,6 +49,10 @@ async function handleDropFolderToFolder(e, destinationFolderId) {
   const draggedFolderId = e.dataTransfer.getData("draggedFolderId");
   let { folders = [] } = await chrome.storage.local.get("folders");
 
+  // you can't drag folder inside of any of its children
+  const childIds = getChildIdsFromFolders(folders, draggedFolderId, [], false);
+  if (childIds.some((id) => id === destinationFolderId)) return;
+
   const folder = getFolderFromFolders(folders, draggedFolderId);
 
   folders = removeFolderFromFolders(folders, draggedFolderId);
@@ -131,4 +135,16 @@ function replaceFolderInFolders(folders, targetFolderId, newFolder) {
 
     return folder;
   });
+}
+
+function getChildIdsFromFolders(folders, targetFolderId, ids, canIterate) {
+  folders.forEach((folder) => {
+    if (folder.id === targetFolderId || canIterate) {
+      ids.push(folder.id);
+      if (folder.children && folder.children.length > 0) {
+        getChildIdsFromFolders(folder.children, targetFolderId, ids, true);
+      }
+    }
+  });
+  return ids;
 }

@@ -29,10 +29,13 @@ async function createChatMenu(name, href, close) {
   controls.appendChild(closeButton);
 
   const { folders = [] } = await chrome.storage.local.get("folders");
-  const folderListNode = createFolderList(
+  const folderListNode = document.createElement("div");
+  createFolderList(
     folders,
     addToSelected,
-    removeFromSelected
+    removeFromSelected,
+    folderListNode,
+    0
   );
 
   const addChatButton = document.createElement("button");
@@ -51,8 +54,13 @@ async function createChatMenu(name, href, close) {
   return chatMenuContainer;
 }
 
-function createFolderList(folders, addToSelected, removeFromSelected) {
-  const container = document.createElement("div");
+function createFolderList(
+  folders,
+  addToSelected,
+  removeFromSelected,
+  container,
+  indent
+) {
   folders.forEach((folder) => {
     const folderSelectHeader = document.createElement("div");
     folderSelectHeader.classList.add("folder-select-header");
@@ -71,8 +79,18 @@ function createFolderList(folders, addToSelected, removeFromSelected) {
 
     folderSelectHeader.appendChild(checkbox);
     folderSelectHeader.appendChild(label);
+    folderSelectHeader.style.marginLeft = `${0.5 * indent}rem`;
 
     container.appendChild(folderSelectHeader);
+
+    if (folder.children && folder.children.length > 0)
+      createFolderList(
+        folder.children,
+        addToSelected,
+        removeFromSelected,
+        container,
+        indent + 1
+      );
   });
   return container;
 }
