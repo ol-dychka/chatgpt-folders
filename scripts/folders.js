@@ -1,4 +1,4 @@
-function createFolderNode(folder, folderIndex, chatsNode) {
+function createFolderNode(folder, chatsNode) {
   const folderNode = document.createElement("li");
   folderNode.style.position = "relative";
 
@@ -54,14 +54,6 @@ function createFolderNode(folder, folderIndex, chatsNode) {
     false
   );
 
-  if (folderIndex === 0) {
-    const firstDropzone = createDropzone(
-      true,
-      (e) => handleDropFolder(e),
-      true
-    );
-    folderNode.appendChild(firstDropzone);
-  }
   folderNode.appendChild(folderHeader);
   const dropzone = createDropzone(
     false,
@@ -73,7 +65,7 @@ function createFolderNode(folder, folderIndex, chatsNode) {
   return folderNode;
 }
 
-function createChatNode(chat, chatIndex, folder) {
+function createChatNode(chat, folder) {
   const chatNode = document.createElement("li");
   chatNode.style.position = "relative";
 
@@ -105,16 +97,9 @@ function createChatNode(chat, chatIndex, folder) {
   );
 
   chatHeader.appendChild(chatText);
-
-  if (chatIndex === 0) {
-    const firstDropzone = createDropzone(true, (e) =>
-      handleDropToFolder(e, folder.id)
-    );
-    chatNode.appendChild(firstDropzone);
-  }
   chatNode.appendChild(chatHeader);
   const dropzone = createDropzone(false, (e) =>
-    handleDropToFolder(e, folder.id, chat)
+    handleDropChat(e, folder.id, chat)
   );
   chatNode.appendChild(dropzone);
 
@@ -173,12 +158,7 @@ async function getFolders() {
 
 async function iterateFolder(folder, folderIndex, folders, indent) {
   let childrenNode = document.createElement("ul");
-  const folderNode = createFolderNode(
-    folder,
-    folderIndex,
-    childrenNode,
-    folders
-  );
+  const folderNode = createFolderNode(folder, childrenNode);
   childrenNode.hidden = !folder.open;
 
   // getting all folders inside
@@ -199,7 +179,7 @@ async function iterateFolder(folder, folderIndex, folders, indent) {
     folder.id,
   ]);
   chats.forEach((chat, chatIndex) => {
-    const chatNode = createChatNode(chat, chatIndex, folder);
+    const chatNode = createChatNode(chat, folder);
     childrenNode.appendChild(chatNode);
   });
 
