@@ -2,11 +2,19 @@ function createFolderOptions(folder, folderNameNode, optionsButton, close) {
   const container = document.createElement("div");
   container.classList.add("options-container");
 
-  const editButton = document.createElement("button");
-  editButton.classList.add("styled-button");
-  editButton.innerText = "Edit";
-  editButton.addEventListener("click", () => {
-    handleEditFolderName(folderNameNode, editButton, optionsButton, folder.id);
+  const editNameButton = document.createElement("button");
+  editNameButton.classList.add("styled-button");
+  editNameButton.innerText = "Name";
+  editNameButton.addEventListener("click", () => {
+    handleEditFolderName(folder.id, optionsButton, folderNameNode);
+    close();
+  });
+
+  const editColorButton = document.createElement("button");
+  editColorButton.classList.add("styled-button");
+  editColorButton.innerText = "Color";
+  editColorButton.addEventListener("click", () => {
+    handleEditFolderColor(folder.id, optionsButton, folderNameNode);
     close();
   });
 
@@ -18,7 +26,8 @@ function createFolderOptions(folder, folderNameNode, optionsButton, close) {
     close();
   });
 
-  container.appendChild(editButton);
+  container.appendChild(editNameButton);
+  container.appendChild(editColorButton);
   container.appendChild(deleteButton);
 
   return container;
@@ -34,43 +43,56 @@ async function handleDeleteFolder(id) {
   updateFolders();
 }
 
-async function handleEditFolderName(
-  folderNameNode,
-  editButton,
-  optionsButton,
-  folderId
-) {
+async function handleEditFolderColor(folderId, optionsButton, folderNameNode) {
   optionsButton.disabled = true;
+
   let { folders = [] } = await chrome.storage.local.get("folders");
   let folder = getFolderFromFolders(folders, folderId);
 
-  const oldName = folderNameNode.innerText;
-
   const input = document.createElement("input");
-  input.classList.add("styled-inline-input");
-  input.value = oldName;
+  input.type = "color";
+  input.value = folder.color;
 
   const saveButton = document.createElement("button");
-  saveButton.classList.add("inline-text-button");
+  saveButton.classList.add("inline-colored-text-button");
   saveButton.textContent = "Save";
-
-  editButton.disabled = true;
 
   folderNameNode.innerText = null;
   folderNameNode.appendChild(input);
   folderNameNode.appendChild(saveButton);
 
   saveButton.addEventListener("click", () => {
-    folderNameNode.removeChild(folderNameNode.firstChild);
-    folderNameNode.removeChild(folderNameNode.firstChild);
-    editButton.disabled = false;
-    const newName = input.value;
-    folderNameNode.innerText = newName;
-
-    folder.name = newName;
+    folder.color = input.value;
     folders = replaceFolderInFolders(folders, folder.id, folder);
     chrome.storage.local.set({ folders: folders });
 
-    optionsButton.disabled = false;
+    updateFolders();
+  });
+}
+
+async function handleEditFolderName(folderId, optionsButton, folderNameNode) {
+  optionsButton.disabled = true;
+
+  let { folders = [] } = await chrome.storage.local.get("folders");
+  let folder = getFolderFromFolders(folders, folderId);
+
+  const input = document.createElement("input");
+  input.classList.add("styled-inline-input");
+  input.value = folder.name;
+
+  const saveButton = document.createElement("button");
+  saveButton.classList.add("inline-colored-text-button");
+  saveButton.textContent = "Save";
+
+  folderNameNode.innerText = null;
+  folderNameNode.appendChild(input);
+  folderNameNode.appendChild(saveButton);
+
+  saveButton.addEventListener("click", () => {
+    folder.name = input.value;
+    folders = replaceFolderInFolders(folders, folder.id, folder);
+    chrome.storage.local.set({ folders: folders });
+
+    updateFolders();
   });
 }

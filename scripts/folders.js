@@ -4,15 +4,15 @@ function createFolderNode(folder, chatsNode) {
 
   const folderHeader = document.createElement("div");
   folderHeader.classList.add("folder-header");
-  // folderHeader.style.backgroundColor = folder.color;
-  // folderHeader.style.color = getContrastColor(folder.color);
+  folderHeader.style.backgroundColor = folder.color;
+  folderHeader.style.color = getContrastColor(folder.color);
 
   const folderName = document.createElement("div");
   folderName.classList.add("folder-name");
   folderName.innerText = folder.name;
 
   const optionsButton = document.createElement("button");
-  optionsButton.classList.add("inline-text-button");
+  optionsButton.classList.add("inline-colored-text-button");
   optionsButton.innerText = "•••";
   optionsButton.addEventListener("click", (e) =>
     attachPopup(
@@ -22,7 +22,7 @@ function createFolderNode(folder, chatsNode) {
   );
 
   const toggleButton = document.createElement("button");
-  toggleButton.classList.add("toggle-open-button", "inline-button");
+  toggleButton.classList.add("toggle-open-button", "inline-colored-button");
   toggleButton.innerText = "›";
   if (folder.open) toggleButton.classList.add("toggle-open-button-rotated");
   toggleButton.addEventListener("click", () =>
