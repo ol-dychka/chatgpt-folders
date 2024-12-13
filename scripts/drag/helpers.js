@@ -40,17 +40,20 @@ function addFolderToFolders(folders, destinationFolderId, newFolder) {
   return folders;
 }
 
-function getParentFromFolders(folders, targetFolderId) {
+function getParentFromFolders(folders, targetFolderId, parent = null) {
   for (let folder of folders) {
-    if (folder.children && folder.children.length > 0) {
-      if (folder.children.some((child) => child.id === targetFolderId))
-        return folder;
+    if (folder.id === targetFolderId) return parent;
 
-      // else
-      const result = getParentFromFolders(folder.children, targetFolderId);
+    if (folder.children && folder.children.length > 0) {
+      const result = getParentFromFolders(
+        folder.children,
+        targetFolderId,
+        folder
+      );
       if (result) return result;
     }
   }
+
   return null;
 }
 
@@ -70,14 +73,27 @@ function replaceFolderInFolders(folders, targetFolderId, newFolder) {
   });
 }
 
-function getChildIdsFromFolders(folders, targetFolderId, ids, canIterate) {
-  folders.forEach((folder) => {
-    if (folder.id === targetFolderId || canIterate) {
-      ids.push(folder.id);
-      if (folder.children && folder.children.length > 0) {
-        getChildIdsFromFolders(folder.children, targetFolderId, ids, true);
-      }
+function getChildIdsFromFolders(folders, targetId) {
+  for (let folder of folders) {
+    if (folder.id === targetId) return collectChildIds(folder.children);
+
+    if (folder.children && folder.children.length > 0) {
+      const result = getChildIdsFromFolders(folder.children, targetId);
+      if (result) return result;
     }
-  });
+  }
+  return [];
+}
+
+function collectChildIds(children) {
+  let ids = [];
+
+  for (let child of children) {
+    ids.push(child.id);
+
+    if (child.children && child.children.length > 0) {
+      ids = ids.concat(collectChildIds(child.children));
+    }
+  }
   return ids;
 }
