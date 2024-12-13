@@ -40,7 +40,7 @@ async function handleDeleteFolder(id) {
   chrome.storage.local.set({ folders: folders });
   chrome.storage.local.remove([id]);
 
-  updateFolders();
+  await updateFolders();
 }
 
 async function handleEditFolderColor(folderId, optionsButton, folderNameNode) {

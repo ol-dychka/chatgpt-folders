@@ -181,15 +181,6 @@ ul > li:last-child {
   border: #5d5d5d dashed 2px;
 }
 
-.dropzone-top {
-  height: 1rem;
-  width: 100%;
-  border-radius: 0.125rem;
-  position: absolute;
-  top: -0.5rem;
-  z-index: 1000;
-}
-
 .chat-text:hover {
   background-color: #ececec;
 }

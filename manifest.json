@@ -9,14 +9,18 @@
       "matches": ["https://chatgpt.com/*"],
       "js": [
         "scripts/popup.js",
+
         "scripts/drag/dropzone.js",
-        "scripts/drag/dropToFolder.js",
-        "scripts/drag/dragChat.js",
-        "scripts/drag/dragFolder.js",
+        "scripts/drag/drag.js",
+        "scripts/drag/helpers.js",
+        "scripts/drag/dropChat.js",
+        "scripts/drag/dropFolder.js",
+
         "scripts/chatOptions.js",
         "scripts/folderOptions.js",
         "scripts/folderMenu.js",
         "scripts/chatMenu.js",
+
         "scripts/folders.js",
         "scripts/startup.js",
         "content.js"

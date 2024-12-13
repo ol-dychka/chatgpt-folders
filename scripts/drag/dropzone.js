@@ -1,14 +1,22 @@
-function createDropzone(isTop, handleDrop, isFolder) {
+function createDropzone(handleDrop) {
   const dropzone = document.createElement("div");
-  dropzone.classList.add(isTop ? "dropzone-top" : "dropzone-bottom");
-  if (isFolder) dropzone.style.borderColor = "green";
+  dropzone.classList.add("dropzone-bottom");
 
-  dropzone.addEventListener("drop", (e) => handleDrop(e), false);
+  dropzone.addEventListener(
+    "drop",
+    (e) => {
+      handleDrop(e);
+      e.target.classList.remove("dragover");
+    },
+    false
+  );
 
   dropzone.addEventListener("dragover", (e) => e.preventDefault(), false);
+
   dropzone.addEventListener("dragenter", (e) =>
     e.target.classList.add("dragover")
   );
+
   dropzone.addEventListener("dragleave", (e) =>
     e.target.classList.remove("dragover")
   );

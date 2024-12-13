@@ -55,11 +55,7 @@ function createFolderNode(folder, chatsNode) {
   );
 
   folderNode.appendChild(folderHeader);
-  const dropzone = createDropzone(
-    false,
-    (e) => handleDropFolder(e, folder.id),
-    true
-  );
+  const dropzone = createDropzone((e) => handleDropFolder(e, folder.id));
   folderNode.appendChild(dropzone);
 
   return folderNode;
@@ -98,9 +94,7 @@ function createChatNode(chat, folder) {
 
   chatHeader.appendChild(chatText);
   chatNode.appendChild(chatHeader);
-  const dropzone = createDropzone(false, (e) =>
-    handleDropChat(e, folder.id, chat)
-  );
+  const dropzone = createDropzone((e) => handleDropChat(e, folder.id, chat));
   chatNode.appendChild(dropzone);
 
   return chatNode;
