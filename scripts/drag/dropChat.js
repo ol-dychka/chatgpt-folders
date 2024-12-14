@@ -42,9 +42,10 @@ async function dropChatInDifferentFolder(
   );
   sourceFolder.splice(draggedIndex, 1);
 
-  let destinationIndex =
-    destinationFolder.findIndex((chat) => chat.href === destinationChat?.href) +
-    1;
+  let destinationIndex = destinationFolder.findIndex(
+    (chat) => chat.href === destinationChat?.href
+  );
+  if (destinationIndex < 0) destinationIndex = folder.length;
   destinationFolder.splice(destinationIndex, 0, draggedChat);
 
   chrome.storage.local.set({
@@ -61,8 +62,11 @@ async function dropChatInSameFolder(folderId, draggedChat, destinationChat) {
   let draggedIndex = folder.findIndex((chat) => chat.href === draggedChat.href);
   folder.splice(draggedIndex, 1);
 
-  let destinationIndex =
-    folder.findIndex((chat) => chat.href === destinationChat?.href) + 1;
+  let destinationIndex = folder.findIndex(
+    (chat) => chat.href === destinationChat?.href
+  );
+  if (destinationIndex < 0) destinationIndex = folder.length;
+  console.log(destinationIndex);
   folder.splice(destinationIndex, 0, draggedChat);
 
   chrome.storage.local.set({

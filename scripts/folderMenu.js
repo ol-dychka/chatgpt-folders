@@ -53,7 +53,7 @@ async function handleAddFolder(name, color) {
     const { folders = [] } = await chrome.storage.local.get("folders");
     const id = generateUniqueId();
 
-    folders.unshift({ id: id.toString(), name, color, open: true });
+    folders.push({ id: id.toString(), name, color, open: true });
     chrome.storage.local.set({ folders: folders });
     await updateFolders();
   }

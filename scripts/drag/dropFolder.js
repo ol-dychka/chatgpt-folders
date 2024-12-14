@@ -15,16 +15,18 @@ async function dropFolder(e, destinationFolderId) {
   const parentFolder = getParentFromFolders(folders, destinationFolderId);
 
   if (parentFolder) {
-    const destinationIndex =
-      parentFolder.children.findIndex(
-        (child) => child.id === destinationFolderId
-      ) + 1;
+    let destinationIndex = parentFolder.children.findIndex(
+      (child) => child.id === destinationFolderId
+    );
+    if (destinationIndex < 0) destinationIndex = parentFolder.length;
     parentFolder.children.splice(destinationIndex, 0, draggedFolder);
 
     folders = replaceFolderInFolders(folders, parentFolder.id, parentFolder);
   } else {
-    const destinationIndex =
-      folders.findIndex((folder) => folder.id === destinationFolderId) + 1;
+    let destinationIndex = folders.findIndex(
+      (folder) => folder.id === destinationFolderId
+    );
+    if (destinationIndex < 0) destinationIndex = folders.length;
     folders.splice(destinationIndex, 0, draggedFolder);
   }
 

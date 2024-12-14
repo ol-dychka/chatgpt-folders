@@ -1,6 +1,6 @@
 function createDropzone(handleDrop) {
   const dropzone = document.createElement("div");
-  dropzone.classList.add("dropzone-bottom");
+  dropzone.classList.add("dropzone");
 
   dropzone.addEventListener(
     "drop",

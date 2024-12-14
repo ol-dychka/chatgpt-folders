@@ -47,6 +47,19 @@ async function handleDropChat(e, folderId, chat) {
   await updateFolders();
 }
 
+async function handleDropOutside(e) {
+  const type = e.dataTransfer.getData("type");
+  if (type === "folder") {
+    if (isFolderDropping) return;
+    isFolderDropping = true;
+
+    await dropFolderOutside(e);
+
+    isFolderDropping = false;
+  }
+  await updateFolders();
+}
+
 function handleDragFolder(e, folderId) {
   e.dataTransfer.setData("type", "folder");
   e.dataTransfer.setData("draggedFolderId", folderId);

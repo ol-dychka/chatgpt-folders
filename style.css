@@ -168,13 +168,13 @@ ul > li:last-child {
   color: black;
 }
 
-.dropzone-bottom {
+.dropzone {
   height: 1rem;
   width: 100%;
   border-radius: 0.125rem;
   position: absolute;
-  bottom: -0.5rem;
-  z-index: 1000;
+  top: -0.5rem;
+  z-index: 100000;
 }
 
 .dragover {

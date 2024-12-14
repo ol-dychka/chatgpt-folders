@@ -29,7 +29,7 @@ function addFolderToFolders(folders, destinationFolderId, newFolder) {
   folders.forEach((folder) => {
     if (folder.id === destinationFolderId) {
       if (!folder.children) folder.children = [];
-      folder.children.unshift(newFolder);
+      folder.children.push(newFolder);
     }
 
     if (folder.children && folder.children.length > 0) {
@@ -75,9 +75,9 @@ function replaceFolderInFolders(folders, targetFolderId, newFolder) {
 
 function getChildIdsFromFolders(folders, targetId) {
   for (let folder of folders) {
-    if (folder.id === targetId) return collectChildIds(folder.children);
-
     if (folder.children && folder.children.length > 0) {
+      if (folder.id === targetId) return collectChildIds(folder.children);
+
       const result = getChildIdsFromFolders(folder.children, targetId);
       if (result) return result;
     }
