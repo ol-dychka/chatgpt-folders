@@ -1,25 +1,27 @@
-import { MongoClient } from "mongodb";
-import "dotenv/config";
+import express from "express";
+import mongoose from "mongoose";
+import dotenv from "dotenv";
+import router from "./routes/folders.js";
 
-// Replace the uri string with your connection string.
-const uri = process.env.MONGODB_URI;
-console.log(uri);
+// Load environment variables
+dotenv.config();
 
-const client = new MongoClient(uri);
+const app = express();
 
-async function run() {
-  try {
-    const database = client.db("sample_mflix");
-    const movies = database.collection("movies");
+// Middleware to parse JSON
+app.use(express.json());
 
-    // Query for a movie that has the title 'Back to the Future'
-    const query = { title: "Back to the Future" };
-    const movie = await movies.findOne(query);
+// Use the API routes
+app.use("/api", router);
 
-    console.log("movie: ", movie);
-  } finally {
-    // Ensures that the client will close when you finish/error
-    await client.close();
-  }
-}
-run().catch(console.dir);
+// MongoDB connection
+mongoose
+  .connect(process.env.MONGODB_URI)
+  .then(() => console.log("MongoDB connected"))
+  .catch((err) => console.log("Error connecting to MongoDB:", err));
+
+// Start the server
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});
