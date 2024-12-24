@@ -1,7 +1,9 @@
 import express from "express";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
-import router from "./routes/folders.js";
+import folderRouter from "./routes/folders.js";
+import conversationRouter from "./routes/conversations.js";
+import userRouter from "./routes/users.js";
 
 // Load environment variables
 dotenv.config();
@@ -12,7 +14,9 @@ const app = express();
 app.use(express.json());
 
 // Use the API routes
-app.use("/api", router);
+app.use("/api/folders", folderRouter);
+app.use("/api/conversations", conversationRouter);
+app.use("/api/users", userRouter);
 
 // MongoDB connection
 mongoose

@@ -1,18 +1,32 @@
 import express from "express";
-const router = express.Router();
-import { folderSchema } from "../models/Data.js";
+const folderRouter = express.Router();
+import { folderModel } from "../schemas/Folder.js";
+import { userModel } from "../schemas/User.js";
 
 // create folder
-router.post("/folders/create", async (req, res) => {
-  const { name, color, open } = req.body;
+folderRouter.post("/create", async (req, res) => {
+  const { mime_type, folder_name, folder_color, is_open, user_id } = req.body;
 
-  if (!name || !color) {
+  if (!folder_name || !folder_color) {
     return res.status(400).json({ error: "Name and color are required" });
   }
 
+  // saving to folders collection
   try {
-    const newFolder = new folderSchema({ name, color, open });
+    const newFolder = new folderModel({
+      mime_type,
+      folder_name,
+      folder_color,
+      is_open,
+      user_id,
+    });
     await newFolder.save();
+
+    // saving to users folders
+    let user = await userModel.findById(user_id);
+    user.folders.push(newFolder._id);
+    await user.save();
+
     res
       .status(200)
       .json({ message: "Data saved successfully", data: newFolder });
@@ -22,58 +36,66 @@ router.post("/folders/create", async (req, res) => {
 });
 
 // update folder
-router.post("/folder/:id", async (req, res) => {
+folderRouter.post("/:id", async (req, res) => {
   const { id } = req.params;
-  const { name, color, open } = req.body;
+  const { folder_name, folder_color, is_open } = req.body;
 
-  if (!name || !color) {
+  if (!folder_name || !folder_color) {
     return res.status(400).json({ error: "Name and color are required" });
   }
 
   try {
-    const oldFolder = await folderSchema.findById(id);
-    oldFolder.name = name;
-    oldFolder.color = color;
-    oldFolder.open = open;
-    await oldFolder.save();
-    res
-      .status(200)
-      .json({ message: "Data saved successfully", data: oldFolder });
+    const folder = await folderModel.findById(id);
+    folder.folder_name = folder_name;
+    folder.folder_color = folder_color;
+    folder.is_open = is_open;
+    await folder.save();
+    res.status(200).json({ message: "Data saved successfully", data: folder });
   } catch (err) {
     res.status(500).json({ error: "Server error" });
   }
 });
 
 // get folder by id
-router.get("/folder/:id", async (req, res) => {
+folderRouter.get("/:id", async (req, res) => {
   const { id } = req.params;
   try {
-    const data = await folderSchema.findById(id);
-    res.status(200).json(data);
+    const folder = await folderModel.findById(id);
+    res.status(200).json(folder);
   } catch (err) {
     res.status(500).json({ error: "Server error" });
   }
 });
 
 // delete folder by id
-router.delete("/folder/:id", async (req, res) => {
+folderRouter.delete("/:id", async (req, res) => {
   const { id } = req.params;
+  const { user_id } = req.body;
   try {
-    const data = await folderSchema.findByIdAndDelete(id);
-    res.status(200).json(data);
+    // removing folder
+    const folder = await folderModel.findByIdAndDelete(id);
+
+    //updating users folders
+    const user = await userModel.findById(user_id);
+    user.folders = user.folders.filter((folderId) => folderId !== id);
+    await user.save();
+
+    res.status(200).json(folder);
   } catch (err) {
     res.status(500).json({ error: "Server error" });
   }
 });
 
 // get all folders
-router.get("/folders", async (req, res) => {
+folderRouter.get("/", async (req, res) => {
   try {
-    const data = await folderSchema.find();
-    res.status(200).json(data);
+    const { user_id } = req.body;
+
+    const user = await userModel.findById(user_id).populate("Folder").exec();
+    res.status(200).json(user.folders);
   } catch (err) {
     res.status(500).json({ error: "Server error" });
   }
 });
 
-export default router;
+export default folderRouter;
