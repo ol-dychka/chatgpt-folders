@@ -22,11 +22,12 @@ const userSchema = mongoose.Schema(
       // },
     },
     password: { type: String, required: true },
-    folders: {
-      type: [mongoose.Schema.Types.ObjectId],
-      ref: "Folder",
-      required: true,
-    },
+    folders: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Folder",
+      },
+    ],
   },
   { timestamps: true }
 );

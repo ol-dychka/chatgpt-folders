@@ -5,7 +5,8 @@ import { userModel } from "../schemas/User.js";
 
 // create folder
 folderRouter.post("/create", async (req, res) => {
-  const { mime_type, folder_name, folder_color, is_open, user_id } = req.body;
+  const { mime_type, folder_name, folder_color, is_open } = req.body;
+  const { user_id } = req.headers["user-id"];
 
   if (!folder_name || !folder_color) {
     return res.status(400).json({ error: "Name and color are required" });
@@ -70,7 +71,7 @@ folderRouter.get("/:id", async (req, res) => {
 // delete folder by id
 folderRouter.delete("/:id", async (req, res) => {
   const { id } = req.params;
-  const { user_id } = req.body;
+  const { user_id } = req.headers["user-id"];
   try {
     // removing folder
     const folder = await folderModel.findByIdAndDelete(id);
@@ -89,9 +90,9 @@ folderRouter.delete("/:id", async (req, res) => {
 // get all folders
 folderRouter.get("/", async (req, res) => {
   try {
-    const { user_id } = req.body;
+    const user_id = req.headers["user-id"];
 
-    const user = await userModel.findById(user_id).populate("Folder").exec();
+    const user = await userModel.findById(user_id).populate("folders").exec();
     res.status(200).json(user.folders);
   } catch (err) {
     res.status(500).json({ error: "Server error" });

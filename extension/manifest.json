@@ -20,6 +20,11 @@
         "scripts/popups/folderMenu.js",
         "scripts/popups/chatMenu.js",
 
+        "scripts/api/api.js",
+        "scripts/api/getData.js",
+        "scripts/api/postData.js",
+        "scripts/api/deleteData.js",
+
         "scripts/folders.js",
         "scripts/startup.js",
         "content.js"

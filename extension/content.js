@@ -1,3 +1,5 @@
+const USER_ID = "6769cbed82f7b700d007daff";
+
 // Observe changes in the DOM using MutationObserver
 const observer = new MutationObserver(async () => {
   await appendFolders();
