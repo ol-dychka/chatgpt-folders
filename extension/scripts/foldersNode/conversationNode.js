@@ -23,7 +23,7 @@ function createConversationNode(conversation, folder) {
   conversationText.appendChild(link);
   conversationText.appendChild(optionsButton);
   conversationText.addEventListener("dragstart", (e) =>
-    handleDragChat(e, conversation, folder)
+    handleDragConversation(e, conversation, folder)
   );
 
   conversationHeader.appendChild(conversationText);

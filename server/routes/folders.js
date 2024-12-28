@@ -2,6 +2,7 @@ import express from "express";
 const folderRouter = express.Router();
 import { folderModel } from "../schemas/Folder.js";
 import { userModel } from "../schemas/User.js";
+import mongoose from "mongoose";
 
 // create folder
 folderRouter.post("/create", async (req, res) => {
@@ -58,6 +59,35 @@ folderRouter.post("/:id", async (req, res) => {
   }
 });
 
+//move folder
+folderRouter.post("/:id/move", async (req, res) => {
+  const { id } = req.params;
+  const { destinationFolderId } = req.body;
+  const userId = req.headers["user-id"];
+
+  try {
+    const user = await userModel.findById(userId);
+    const index = user.folders.findIndex(
+      (folderId) => folderId.toString() === id
+    );
+    const folder = user.folders.splice(index, 1)[0];
+    console.log(folder);
+
+    const destinationIndex = destinationFolderId
+      ? user.folders.findIndex(
+          (folderId) => folderId.toString() === destinationFolderId
+        )
+      : user.folders.length;
+
+    user.folders.splice(destinationIndex, 0, folder);
+    await user.save();
+
+    res.status(200).json({ message: "Data saved successfully" });
+  } catch (err) {
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
 // get folder by id
 folderRouter.get("/:id", async (req, res) => {
   const { id } = req.params;
@@ -79,7 +109,9 @@ folderRouter.delete("/:id", async (req, res) => {
 
     //updating users folders
     const user = await userModel.findById(userId);
-    user.folders = user.folders.filter((folderId) => folderId !== id);
+    user.folders = user.folders.filter(
+      (folderId) => folderId.toString() !== id
+    );
     await user.save();
 
     res.status(200).json(folder);

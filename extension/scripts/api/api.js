@@ -5,6 +5,8 @@ const api = {
   createFolder: async (newFolder) => postData("folders/create", newFolder),
   updateFolder: async (folderId, folderFragment) =>
     postData(`folders/${folderId}`, folderFragment),
+  moveFolder: async (folderId, destinationFolderId) =>
+    postData(`folders/${folderId}/move`, { destinationFolderId }),
   deleteFolder: async (folderId) => deleteData(`folders/${folderId}`),
 
   addConversation: async (newConversation) =>

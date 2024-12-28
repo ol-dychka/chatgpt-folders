@@ -44,7 +44,7 @@ function createFolderNode(folder, conversationsNode) {
 
   folderHeader.draggable = true;
   folderHeader.addEventListener("dragstart", (e) => {
-    handleDragFolder(e, folder.id);
+    handleDragFolder(e, folder);
   });
 
   folderHeader.addEventListener("dragover", (e) => e.preventDefault(), false);
