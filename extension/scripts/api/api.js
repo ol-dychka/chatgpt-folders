@@ -9,10 +9,17 @@ const api = {
 
   addConversation: async (newConversation) =>
     postData("conversations/create", newConversation),
-  changeConversationFolder: async (conversationId, oldFolderId, newFolderId) =>
-    postData(`conversations/${conversationId}`, { oldFolderId, newFolderId }),
+  moveConversation: async (
+    draggedConversationId,
+    sourceFolderId,
+    destinationFolderId,
+    destinationConversationId
+  ) =>
+    postData(`conversations/${draggedConversationId}`, {
+      sourceFolderId,
+      destinationFolderId,
+      destinationConversationId,
+    }),
   deleteConversation: async (conversationId) =>
     deleteData(`conversations/${conversationId}`),
-
-  // there may be some problems with camelCase used here and snake_case used in backend
 };

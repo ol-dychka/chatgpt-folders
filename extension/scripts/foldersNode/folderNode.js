@@ -50,7 +50,7 @@ function createFolderNode(folder, conversationsNode) {
   folderHeader.addEventListener("dragover", (e) => e.preventDefault(), false);
   folderHeader.addEventListener(
     "drop",
-    (e) => handleDropToFolder(e, folder._id),
+    (e) => handleDropConversation(e, folder._id),
     false
   );
 

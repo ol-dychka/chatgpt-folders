@@ -29,32 +29,65 @@ conversationRouter.post("/create", async (req, res) => {
 });
 
 // change folder
-conversationRouter.post("/:conversationId", async (req, res) => {
-  const { conversationId } = req.params;
-  const { oldFolderId, newFolderId } = req.body;
+conversationRouter.post("/:draggedConversationId", async (req, res) => {
+  const { draggedConversationId } = req.params;
+  const { sourceFolderId, destinationFolderId, destinationConversationId } =
+    req.body;
 
-  if (!oldFolderId || !newFolderId)
+  if (!sourceFolderId)
     return res.status(400).json({ error: "params are required" });
 
-  if (oldFolderId === newFolderId)
-    return res.status(400).json({ error: "ids should be different" });
-
   try {
-    const oldFolder = await folderModel.findById(oldFolderId);
-    const newFolder = await folderModel.findById(newFolderId);
+    if (sourceFolderId === destinationFolderId) {
+      const folder = await folderModel.findById(sourceFolderId);
 
-    const targetIndex = oldFolder.conversations.findIndex(
-      (conversation) => conversation.conversationId === conversationId
-    );
-    const conversation = oldFolder.splice(targetIndex, 1)[0];
-    await oldFolder.save();
+      // removing from folder
+      const draggedIndex = folder.conversations.findIndex(
+        (conversation) => conversation.conversationId === draggedConversationId
+      );
+      const draggedConversation = folder.conversations.splice(
+        draggedIndex,
+        1
+      )[0];
 
-    newFolder.conversations.push(conversation);
-    await newFolder.save();
+      // adding to folder
+      const destinationIndex = destinationConversationId
+        ? folder.conversations.findIndex(
+            (conversation) =>
+              conversation.conversationId === destinationConversationId
+          )
+        : folder.conversations.length;
+      folder.conversations.splice(destinationIndex, 0, draggedConversation);
 
-    res
-      .status(200)
-      .json({ message: "Data saved successfully", data: newFolder });
+      await folder.save();
+    } else {
+      // removing from source folder
+      const sourceFolder = await folderModel.findById(sourceFolderId);
+      const draggedIndex = sourceFolder.conversations.findIndex(
+        (conversation) => conversation.conversationId === draggedConversationId
+      );
+      const draggedConversation = sourceFolder.conversations.splice(
+        draggedIndex,
+        1
+      )[0];
+      await sourceFolder.save();
+
+      // adding to destination folder
+      const destinationFolder = await folderModel.findById(destinationFolderId);
+      const destinationIndex = destinationConversationId
+        ? destinationFolder.conversations.findIndex(
+            (conversation) =>
+              conversation.conversationId === destinationConversationId
+          )
+        : destinationFolder.conversations.length;
+      destinationFolder.conversations.splice(
+        destinationIndex,
+        0,
+        draggedConversation
+      );
+      await destinationFolder.save();
+    }
+    res.status(200).json({ message: "Data saved successfully" });
   } catch (err) {
     res.status(500).json({ error: "Server error" });
   }

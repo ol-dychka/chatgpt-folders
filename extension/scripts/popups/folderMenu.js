@@ -50,11 +50,7 @@ function createFolderMenu(close) {
 async function handleAddFolder(name, color) {
   if (/\S/.test(name)) {
     // string is not empty and not just whitespace
-    const { folders = [] } = await chrome.storage.local.get("folders");
-    const id = generateUniqueId();
-
-    folders.push({ id: id.toString(), name, color, open: true });
-    chrome.storage.local.set({ folders: folders });
+    await api.createFolder({ name, color, isOpen: true });
     await updateFoldersNode();
   }
 }
@@ -64,8 +60,4 @@ function generateHexCode() {
     "#" + ((Math.random() * 0xffffff) << 0).toString(16).padStart(6, "0");
   console.log(res);
   return res;
-}
-
-function generateUniqueId() {
-  return "id-" + Date.now() + "-" + Math.random().toString(36).substring(2, 9);
 }

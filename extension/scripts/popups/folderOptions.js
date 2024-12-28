@@ -6,7 +6,7 @@ function createFolderOptions(folder, folderNameNode, optionsButton, close) {
   editNameButton.classList.add("styled-button");
   editNameButton.innerText = "Name";
   editNameButton.addEventListener("click", () => {
-    handleEditFolderName(folder._id, optionsButton, folderNameNode);
+    handleEditFolderName(folder, optionsButton, folderNameNode);
     close();
   });
 
@@ -14,7 +14,7 @@ function createFolderOptions(folder, folderNameNode, optionsButton, close) {
   editColorButton.classList.add("styled-button");
   editColorButton.innerText = "Color";
   editColorButton.addEventListener("click", () => {
-    handleEditFolderColor(folder._id, optionsButton, folderNameNode);
+    handleEditFolderColor(folder, optionsButton, folderNameNode);
     close();
   });
 
@@ -39,10 +39,8 @@ async function handleDeleteFolder(id) {
   await updateFoldersNode();
 }
 
-async function handleEditFolderColor(id, optionsButton, folderNameNode) {
+async function handleEditFolderColor(folder, optionsButton, folderNameNode) {
   optionsButton.disabled = true;
-
-  let folder = await api.getFolder(id);
 
   const input = document.createElement("input");
   input.type = "color";
@@ -57,16 +55,14 @@ async function handleEditFolderColor(id, optionsButton, folderNameNode) {
   folderNameNode.appendChild(saveButton);
 
   saveButton.addEventListener("click", async () => {
-    await api.updateFolder(id, { color: input.value });
+    await api.updateFolder(folder._id, { color: input.value });
 
     await updateFoldersNode();
   });
 }
 
-async function handleEditFolderName(id, optionsButton, folderNameNode) {
+async function handleEditFolderName(folder, optionsButton, folderNameNode) {
   optionsButton.disabled = true;
-
-  let folder = await api.getFolder(id);
 
   const input = document.createElement("input");
   input.classList.add("styled-inline-input");
@@ -81,7 +77,7 @@ async function handleEditFolderName(id, optionsButton, folderNameNode) {
   folderNameNode.appendChild(saveButton);
 
   saveButton.addEventListener("click", async () => {
-    await api.updateFolder(id, { name: input.value });
+    await api.updateFolder(folder._id, { name: input.value });
 
     await updateFoldersNode();
   });

@@ -8,11 +8,11 @@
     {
       "matches": ["https://chatgpt.com/*"],
       "js": [
-        "scripts/drag/dropzone.js",
-        "scripts/drag/drag.js",
-        "scripts/drag/helpers.js",
-        "scripts/drag/dropChat.js",
-        "scripts/drag/dropFolder.js",
+        "scripts/dragDrop/dropzone.js",
+        "scripts/dragDrop/drag/dragConversation.js",
+        "scripts/dragDrop/drag/dragFolder.js",
+        "scripts/dragDrop/drop/dropConversation.js",
+        "scripts/dragDrop/drop/dropFolder.js",
 
         "scripts/popups/popup.js",
         "scripts/popups/conversationOptions.js",

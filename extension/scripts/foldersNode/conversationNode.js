@@ -29,7 +29,7 @@ function createConversationNode(conversation, folder) {
   conversationHeader.appendChild(conversationText);
   conversationNode.appendChild(conversationHeader);
   const dropzone = createDropzone((e) =>
-    handleDropChat(e, folder.id, conversation)
+    handleDropConversation(e, folder._id, conversation.conversationId)
   );
   conversationNode.appendChild(dropzone);
 
