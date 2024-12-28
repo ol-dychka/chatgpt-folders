@@ -1,12 +1,14 @@
 async function createConversationMenu(name, href, close) {
   let selectedFolders = [];
 
-  const addToSelected = (folderId) => {
-    selectedFolders.push(folderId);
+  const addToSelected = (folder) => {
+    selectedFolders.push(folder);
   };
 
-  const removeFromSelected = (folderId) => {
-    selectedFolders = selectedFolders.filter((id) => id !== folderId);
+  const removeFromSelected = (folder) => {
+    selectedFolders = selectedFolders.filter(
+      (selectedFolder) => selectedFolder._id !== folder._id
+    );
   };
 
   const chatMenuContainer = document.createElement("div");
@@ -17,7 +19,7 @@ async function createConversationMenu(name, href, close) {
 
   const label = document.createElement("p");
   label.classList.add("chat-menu-label");
-  label.textContent = `Add chat "${name}" to a folder`;
+  label.textContent = `Add conversation "${name}" to a folder`;
 
   const closeButton = document.createElement("button");
   closeButton.classList.add("styled-button");
@@ -28,39 +30,32 @@ async function createConversationMenu(name, href, close) {
   controls.appendChild(label);
   controls.appendChild(closeButton);
 
-  const { folders = [] } = await chrome.storage.local.get("folders");
-  const folderListNode = document.createElement("div");
-  createFolderList(
+  const folders = await api.getFolders();
+
+  const folderListNode = createFolderList(
     folders,
     addToSelected,
-    removeFromSelected,
-    folderListNode,
-    0
+    removeFromSelected
   );
 
-  const addChatButton = document.createElement("button");
-  addChatButton.classList.add("styled-button");
-  addChatButton.textContent = "Add Chat";
+  const addConversationButton = document.createElement("button");
+  addConversationButton.classList.add("styled-button");
+  addConversationButton.textContent = "Add Conversation";
 
-  addChatButton.addEventListener("click", () => {
+  addConversationButton.addEventListener("click", () => {
     console.log(selectedFolders);
-    handleAddChat(name, href, selectedFolders);
+    handleAddConversation(name, getIdFromHref(href), selectedFolders);
     close();
   });
 
   chatMenuContainer.appendChild(controls);
   chatMenuContainer.appendChild(folderListNode);
-  chatMenuContainer.appendChild(addChatButton);
+  chatMenuContainer.appendChild(addConversationButton);
   return chatMenuContainer;
 }
 
-function createFolderList(
-  folders,
-  addToSelected,
-  removeFromSelected,
-  container,
-  indent
-) {
+function createFolderList(folders, addToSelected, removeFromSelected) {
+  const container = document.createElement("div");
   folders.forEach((folder) => {
     const folderSelectHeader = document.createElement("div");
     folderSelectHeader.classList.add("folder-select-header");
@@ -69,8 +64,8 @@ function createFolderList(
     checkbox.classList.add("styled-checkbox");
     checkbox.type = "checkbox";
     checkbox.addEventListener("click", () => {
-      if (checkbox.checked) addToSelected(folder.id);
-      else removeFromSelected(folder.id);
+      if (checkbox.checked) addToSelected(folder);
+      else removeFromSelected(folder);
     });
 
     const label = document.createElement("p");
@@ -79,30 +74,28 @@ function createFolderList(
 
     folderSelectHeader.appendChild(checkbox);
     folderSelectHeader.appendChild(label);
-    folderSelectHeader.style.marginLeft = `${0.5 * indent}rem`;
 
     container.appendChild(folderSelectHeader);
-
-    if (folder.children && folder.children.length > 0)
-      createFolderList(
-        folder.children,
-        addToSelected,
-        removeFromSelected,
-        container,
-        indent + 1
-      );
   });
   return container;
 }
 
-function handleAddChat(name, href, selectedFolders) {
+function handleAddConversation(name, conversationId, selectedFolders) {
+  console.log(selectedFolders);
   if (!selectedFolders) return;
-  selectedFolders.forEach(async (folderId) => {
-    const { [folderId]: folder = [] } = await chrome.storage.local.get([
-      folderId,
-    ]);
-    if (folder.some((chat) => chat.href === href)) return;
-    chrome.storage.local.set({ [folderId]: [...folder, { name, href }] });
+  selectedFolders.forEach(async (folder) => {
+    const isInFolder = folder.conversations
+      ? folder.conversations.some(
+          (conversation) => conversation.conversationId === conversationId
+        )
+      : false;
+    if (isInFolder) return;
+    // else
+    await api.addConversation({ name, conversationId, folderId: folder._id });
   });
   updateFoldersNode();
+}
+
+function getIdFromHref(href) {
+  return href.split("/")[4];
 }

@@ -7,12 +7,8 @@ const api = {
     postData(`folders/${folderId}`, folderFragment),
   deleteFolder: async (folderId) => deleteData(`folders/${folderId}`),
 
-  createConversation: async (conversationName, conversationId, folderId) =>
-    postData("conversations/create", {
-      conversationName,
-      conversationId,
-      folderId,
-    }),
+  addConversation: async (newConversation) =>
+    postData("conversations/create", newConversation),
   changeConversationFolder: async (conversationId, oldFolderId, newFolderId) =>
     postData(`conversations/${conversationId}`, { oldFolderId, newFolderId }),
   deleteConversation: async (conversationId) =>

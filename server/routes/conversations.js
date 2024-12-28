@@ -5,6 +5,7 @@ import { folderModel } from "../schemas/Folder.js";
 
 // create
 conversationRouter.post("/create", async (req, res) => {
+  console.log(req.body);
   const { name, conversationId, folderId } = req.body;
 
   if (!name || !conversationId || !folderId) {
@@ -17,7 +18,7 @@ conversationRouter.post("/create", async (req, res) => {
       name,
       conversationId,
     });
-    const folder = folderModel.findById(folderId);
+    const folder = await folderModel.findById(folderId);
     folder.conversations.push(conversation);
     await folder.save();
 
