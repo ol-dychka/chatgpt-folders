@@ -1,4 +1,4 @@
-function createFolderNode(folder, chatsNode) {
+function createFolderNode(folder, conversationsNode) {
   const folderNode = document.createElement("li");
   folderNode.style.position = "relative";
 
@@ -24,13 +24,13 @@ function createFolderNode(folder, chatsNode) {
   const toggleButton = document.createElement("button");
   toggleButton.classList.add("toggle-open-button", "inline-colored-button");
   toggleButton.innerText = "›";
-  if (folder.open) toggleButton.classList.add("toggle-open-button-rotated");
+  if (folder.isOpen) toggleButton.classList.add("toggle-open-button-rotated");
   toggleButton.addEventListener("click", () =>
-    toggleFolder(folder, toggleButton, folderHeader, chatsNode)
+    toggleFolder(folder, toggleButton, folderHeader, conversationsNode)
   );
 
   //check if folder is open
-  if (folder.open) {
+  if (folder.isOpen) {
     toggleButton.classList.add("toggle-open-button-rotated");
     folderHeader.classList.add("folder-header-open");
   } else {
@@ -50,23 +50,27 @@ function createFolderNode(folder, chatsNode) {
   folderHeader.addEventListener("dragover", (e) => e.preventDefault(), false);
   folderHeader.addEventListener(
     "drop",
-    (e) => handleDropToFolder(e, folder.id),
+    (e) => handleDropToFolder(e, folder._id),
     false
   );
 
   folderNode.appendChild(folderHeader);
-  const dropzone = createDropzone((e) => handleDropFolder(e, folder.id));
+  folderNode.appendChild(conversationsNode);
+  const dropzone = createDropzone((e) => handleDropFolder(e, folder._id));
   folderNode.appendChild(dropzone);
 
   return folderNode;
 }
 
-async function toggleFolder(folder, toggleOpenButton, folderHeader, chatsNode) {
-  let { folders = [] } = await chrome.storage.local.get("folders");
-
-  folder.open = !folder.open;
-  chatsNode.hidden = !chatsNode.hidden;
-  if (folder.open) {
+async function toggleFolder(
+  folder,
+  toggleOpenButton,
+  folderHeader,
+  conversationsNode
+) {
+  folder.isOpen = !folder.isOpen;
+  conversationsNode.hidden = !conversationsNode.hidden;
+  if (folder.isOpen) {
     toggleOpenButton.classList.add("toggle-open-button-rotated");
     folderHeader.classList.add("folder-header-open");
   } else {
@@ -74,9 +78,7 @@ async function toggleFolder(folder, toggleOpenButton, folderHeader, chatsNode) {
     folderHeader.classList.remove("folder-header-open");
   }
 
-  folders = replaceFolderInFolders(folders, folder.id, folder);
-
-  chrome.storage.local.set({ folders: folders });
+  await api.updateFolder(folder._id, { isOpen: folder.isOpen });
 }
 
 function getContrastColor(color) {

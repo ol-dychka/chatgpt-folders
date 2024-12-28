@@ -26,7 +26,7 @@ function createConversationNode(conversation, folder) {
     handleDragChat(e, conversation, folder)
   );
 
-  conversationHeader.appendChild(chatText);
+  conversationHeader.appendChild(conversationText);
   conversationNode.appendChild(conversationHeader);
   const dropzone = createDropzone((e) =>
     handleDropChat(e, folder.id, conversation)
