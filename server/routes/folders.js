@@ -5,26 +5,26 @@ import { userModel } from "../schemas/User.js";
 
 // create folder
 folderRouter.post("/create", async (req, res) => {
-  const { mime_type, folder_name, folder_color, is_open } = req.body;
-  const { user_id } = req.headers["user-id"];
+  const { name, color, isOpen } = req.body;
+  const userId = req.headers["user-id"];
 
-  if (!folder_name || !folder_color) {
+  if (!name || !color) {
     return res.status(400).json({ error: "Name and color are required" });
   }
 
   // saving to folders collection
   try {
     const newFolder = new folderModel({
-      mime_type,
-      folder_name,
-      folder_color,
-      is_open,
-      user_id,
+      mimeType: "folder",
+      name,
+      color,
+      isOpen,
+      userId,
     });
     await newFolder.save();
 
     // saving to users folders
-    let user = await userModel.findById(user_id);
+    let user = await userModel.findById(userId);
     user.folders.push(newFolder._id);
     await user.save();
 
@@ -39,17 +39,17 @@ folderRouter.post("/create", async (req, res) => {
 // update folder
 folderRouter.post("/:id", async (req, res) => {
   const { id } = req.params;
-  const { folder_name, folder_color, is_open } = req.body;
+  const { name, color, isOpen } = req.body;
 
-  if (!folder_name || !folder_color) {
+  if (!name || !color) {
     return res.status(400).json({ error: "Name and color are required" });
   }
 
   try {
     const folder = await folderModel.findById(id);
-    folder.folder_name = folder_name;
-    folder.folder_color = folder_color;
-    folder.is_open = is_open;
+    folder.name = name;
+    folder.color = color;
+    folder.isOpen = isOpen;
     await folder.save();
     res.status(200).json({ message: "Data saved successfully", data: folder });
   } catch (err) {
@@ -71,13 +71,13 @@ folderRouter.get("/:id", async (req, res) => {
 // delete folder by id
 folderRouter.delete("/:id", async (req, res) => {
   const { id } = req.params;
-  const { user_id } = req.headers["user-id"];
+  const userId = req.headers["user-id"];
   try {
     // removing folder
     const folder = await folderModel.findByIdAndDelete(id);
 
     //updating users folders
-    const user = await userModel.findById(user_id);
+    const user = await userModel.findById(userId);
     user.folders = user.folders.filter((folderId) => folderId !== id);
     await user.save();
 
@@ -90,9 +90,9 @@ folderRouter.delete("/:id", async (req, res) => {
 // get all folders
 folderRouter.get("/", async (req, res) => {
   try {
-    const user_id = req.headers["user-id"];
+    const userId = req.headers["user-id"];
 
-    const user = await userModel.findById(user_id).populate("folders").exec();
+    const user = await userModel.findById(userId).populate("folders").exec();
     res.status(200).json(user.folders);
   } catch (err) {
     res.status(500).json({ error: "Server error" });

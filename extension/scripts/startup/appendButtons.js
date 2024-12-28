@@ -22,27 +22,3 @@ function appendButtonsToLinks() {
     }
   });
 }
-
-// append folder menu to the nav bar
-// async functions have problams with rapid mutations so flag is used here
-let isRunning = false;
-async function appendFolders() {
-  if (isRunning) return;
-  console.log("fld running");
-
-  try {
-    isRunning = true;
-    const nav = document.querySelector("nav");
-    const target = nav.getElementsByTagName("div")[2];
-
-    if (!target.querySelector(".folders")) {
-      const folders = await getFolders();
-      console.log(folders);
-      target.insertBefore(folders, target.firstChild);
-    }
-  } catch (err) {
-    console.log(err);
-  } finally {
-    isRunning = false;
-  }
-}

@@ -25,8 +25,12 @@
         "scripts/api/postData.js",
         "scripts/api/deleteData.js",
 
-        "scripts/folders.js",
-        "scripts/startup.js",
+        "scripts/sidebar/foldersNode.js",
+        "scripts/sidebar/folderNode.js",
+        "scripts/sidebar/conversationNode.js",
+
+        "scripts/startup/appendButtons.js",
+        "scripts/startup/appendFolders.js",
         "content.js"
       ],
       "css": ["style.css"],

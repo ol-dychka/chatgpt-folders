@@ -5,19 +5,19 @@ import { folderModel } from "../schemas/Folder.js";
 
 // create
 conversationRouter.post("/create", async (req, res) => {
-  const { conversation_name, conversation_id, folder_id } = req.body;
+  const { name, conversationId, folderId } = req.body;
 
-  if (!conversation_name || !conversation_id || !folder_id) {
+  if (!name || !conversationId || !folderId) {
     return res.status(400).json({ error: "params are required" });
   }
 
   try {
     const conversation = new conversationModel({
-      mime_type: "conversation",
-      conversation_name,
-      conversation_id,
+      mimeType: "conversation",
+      name,
+      conversationId,
     });
-    const folder = folderModel.findById(folder_id);
+    const folder = folderModel.findById(folderId);
     folder.conversations.push(conversation);
     await folder.save();
 
@@ -28,22 +28,22 @@ conversationRouter.post("/create", async (req, res) => {
 });
 
 // change folder
-conversationRouter.post("/:conversation_id", async (req, res) => {
-  const { conversation_id } = req.params;
-  const { old_folder_id, new_folder_id } = req.body;
+conversationRouter.post("/:conversationId", async (req, res) => {
+  const { conversationId } = req.params;
+  const { oldFolderId, newFolderId } = req.body;
 
-  if (!old_folder_id || !new_folder_id)
+  if (!oldFolderId || !newFolderId)
     return res.status(400).json({ error: "params are required" });
 
-  if (old_folder_id === new_folder_id)
+  if (oldFolderId === newFolderId)
     return res.status(400).json({ error: "ids should be different" });
 
   try {
-    const oldFolder = await folderModel.findById(old_folder_id);
-    const newFolder = await folderModel.findById(new_folder_id);
+    const oldFolder = await folderModel.findById(oldFolderId);
+    const newFolder = await folderModel.findById(newFolderId);
 
     const targetIndex = oldFolder.conversations.findIndex(
-      (conversation) => conversation.conversation_id === conversation_id
+      (conversation) => conversation.conversationId === conversationId
     );
     const conversation = oldFolder.splice(targetIndex, 1)[0];
     await oldFolder.save();
@@ -60,28 +60,17 @@ conversationRouter.post("/:conversation_id", async (req, res) => {
 });
 
 // delete chat by id
-conversationRouter.delete("/:conversation_id", async (req, res) => {
-  const { conversation_id } = req.params;
-  const { folder_id } = req.body;
+conversationRouter.delete("/:conversationId", async (req, res) => {
+  const { conversationId } = req.params;
+  const { folderId } = req.body;
   try {
-    const folder = await folderModel.findById(folder_id);
+    const folder = await folderModel.findById(folderId);
     folder.conversations = folder.conversations.filter(
-      (conversation) => conversation.conversation_id !== conversation_id
+      (conversation) => conversation.conversationId !== conversationId
     );
     await folder.save();
 
     res.status(200).json(data);
-  } catch (err) {
-    res.status(500).json({ error: "Server error" });
-  }
-});
-
-// get all chats from folder
-conversationRouter.get("/", async (req, res) => {
-  const { folder_id } = req.body;
-  try {
-    const folder = await folderModel.findById(folder_id);
-    res.status(200).json(folder.conversations);
   } catch (err) {
     res.status(500).json({ error: "Server error" });
   }

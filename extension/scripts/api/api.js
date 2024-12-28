@@ -6,4 +6,17 @@ const api = {
   updateFolder: async (folderId, oldFolder, fragmentedFolder) =>
     postData(`folders/${folderId}`, { ...oldFolder, ...fragmentedFolder }),
   deleteFolder: async (folderId) => deleteData(`folders/${folderId}`),
+
+  createConversation: async (conversationName, conversationId, folderId) =>
+    postData("conversations/create", {
+      conversationName,
+      conversationId,
+      folderId,
+    }),
+  changeConversationFolder: async (conversationId, oldFolderId, newFolderId) =>
+    postData(`conversations/${conversationId}`, { oldFolderId, newFolderId }),
+  deleteConversation: async (conversationId) =>
+    deleteData(`conversations/${conversationId}`),
+
+  // there may be some problems with camelCase used here and snake_case used in backend
 };

@@ -1,0 +1,95 @@
+function createFolderNode(folder, chatsNode) {
+  const folderNode = document.createElement("li");
+  folderNode.style.position = "relative";
+
+  const folderHeader = document.createElement("div");
+  folderHeader.classList.add("folder-header");
+  folderHeader.style.backgroundColor = folder.color;
+  folderHeader.style.color = getContrastColor(folder.color);
+
+  const folderName = document.createElement("div");
+  folderName.classList.add("folder-name");
+  folderName.innerText = folder.name;
+
+  const optionsButton = document.createElement("button");
+  optionsButton.classList.add("inline-colored-text-button");
+  optionsButton.innerText = "•••";
+  optionsButton.addEventListener("click", (e) =>
+    attachPopup(
+      (close) => createFolderOptions(folder, folderName, optionsButton, close),
+      e
+    )
+  );
+
+  const toggleButton = document.createElement("button");
+  toggleButton.classList.add("toggle-open-button", "inline-colored-button");
+  toggleButton.innerText = "›";
+  if (folder.open) toggleButton.classList.add("toggle-open-button-rotated");
+  toggleButton.addEventListener("click", () =>
+    toggleFolder(folder, toggleButton, folderHeader, chatsNode)
+  );
+
+  //check if folder is open
+  if (folder.open) {
+    toggleButton.classList.add("toggle-open-button-rotated");
+    folderHeader.classList.add("folder-header-open");
+  } else {
+    toggleButton.classList.remove("toggle-open-button-rotated");
+    folderHeader.classList.remove("folder-header-open");
+  }
+
+  folderHeader.appendChild(toggleButton);
+  folderHeader.appendChild(folderName);
+  folderHeader.appendChild(optionsButton);
+
+  folderHeader.draggable = true;
+  folderHeader.addEventListener("dragstart", (e) => {
+    handleDragFolder(e, folder.id);
+  });
+
+  folderHeader.addEventListener("dragover", (e) => e.preventDefault(), false);
+  folderHeader.addEventListener(
+    "drop",
+    (e) => handleDropToFolder(e, folder.id),
+    false
+  );
+
+  folderNode.appendChild(folderHeader);
+  const dropzone = createDropzone((e) => handleDropFolder(e, folder.id));
+  folderNode.appendChild(dropzone);
+
+  return folderNode;
+}
+
+async function toggleFolder(folder, toggleOpenButton, folderHeader, chatsNode) {
+  let { folders = [] } = await chrome.storage.local.get("folders");
+
+  folder.open = !folder.open;
+  chatsNode.hidden = !chatsNode.hidden;
+  if (folder.open) {
+    toggleOpenButton.classList.add("toggle-open-button-rotated");
+    folderHeader.classList.add("folder-header-open");
+  } else {
+    toggleOpenButton.classList.remove("toggle-open-button-rotated");
+    folderHeader.classList.remove("folder-header-open");
+  }
+
+  folders = replaceFolderInFolders(folders, folder.id, folder);
+
+  chrome.storage.local.set({ folders: folders });
+}
+
+function getContrastColor(color) {
+  color = color.replace("#", "");
+
+  // Convert hex to RGB values
+  let r = parseInt(color.substring(0, 2), 16);
+  let g = parseInt(color.substring(2, 4), 16);
+  let b = parseInt(color.substring(4, 6), 16);
+
+  // Calculate the luminance (brightness)
+  let luminance = 0.299 * r + 0.587 * g + 0.114 * b;
+
+  // Return black for light colors, white for dark colors
+  return luminance > 128 ? "#000000" : "#ffffff";
+}

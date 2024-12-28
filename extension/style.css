@@ -156,7 +156,7 @@ ul > li:last-child {
   padding: 0 5px;
 }
 
-.chat-text {
+.conversation-text {
   margin-left: 1rem;
   display: flex;
   font-size: 14px;
@@ -181,7 +181,7 @@ ul > li:last-child {
   border: #5d5d5d dashed 2px;
 }
 
-.chat-text:hover {
+.conversation-text:hover {
   background-color: #ececec;
 }
 

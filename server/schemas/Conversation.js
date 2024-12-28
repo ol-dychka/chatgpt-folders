@@ -2,9 +2,9 @@ import mongoose from "mongoose";
 
 const conversationSchema = new mongoose.Schema(
   {
-    mime_type: { type: String, required: true, immutable: true },
-    conversation_id: { type: String, required: true, immutable: true },
-    conversation_name: { type: String, required: true },
+    mimeType: { type: String, required: true, immutable: true },
+    conversationId: { type: String, required: true, immutable: true },
+    name: { type: String, required: true },
   },
   { timestamps: true }
 );

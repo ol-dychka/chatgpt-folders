@@ -3,15 +3,15 @@ const userRouter = express.Router();
 import { userModel } from "../schemas/User.js";
 
 userRouter.post("/create", async (req, res) => {
-  const { mime_type, name, email, password, folders } = req.body;
+  const { name, email, password, folders } = req.body;
 
-  if (!name || !email || !password || !mime_type) {
+  if (!name || !email || !password) {
     return res.status(400).json({ error: "params are required" });
   }
 
   try {
     const newUser = new userModel({
-      mime_type,
+      mimeType: "user",
       name,
       email,
       password,

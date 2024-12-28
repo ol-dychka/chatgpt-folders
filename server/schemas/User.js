@@ -3,7 +3,7 @@ import { folderSchema } from "./Folder.js";
 
 const userSchema = mongoose.Schema(
   {
-    mime_type: { type: String, required: true, immutable: true },
+    mimeType: { type: String, required: true, immutable: true },
     name: { type: String, required: true },
     email: {
       type: String,
