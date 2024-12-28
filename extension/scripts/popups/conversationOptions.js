@@ -1,4 +1,4 @@
-function createChatOptions(chat, folderId, chatNode, close) {
+function createConversationOptions(conversation, close) {
   const container = document.createElement("div");
   container.classList.add("options-container");
 
@@ -6,7 +6,7 @@ function createChatOptions(chat, folderId, chatNode, close) {
   deleteButton.classList.add("styled-button");
   deleteButton.textContent = "Delete";
   deleteButton.addEventListener("click", () => {
-    handleChatDelete(chat, folderId, chatNode);
+    handleConversationDelete(conversation.conversationId);
     close();
   });
 
@@ -15,14 +15,7 @@ function createChatOptions(chat, folderId, chatNode, close) {
   return container;
 }
 
-async function handleChatDelete(chat, folderId, chatNode) {
-  const { [folderId]: targetFolder = [] } = await chrome.storage.local.get([
-    folderId,
-  ]);
-
-  await chrome.storage.local.set({
-    [folderId]: targetFolder.filter((x) => x.href !== chat.href),
-  });
-
-  chatNode.parentNode.removeChild(chatNode);
+async function handleConversationDelete(conversationId) {
+  await api.deleteConversation(conversationId);
+  await updateFoldersNode();
 }
