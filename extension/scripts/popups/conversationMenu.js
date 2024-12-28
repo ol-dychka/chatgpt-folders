@@ -1,4 +1,4 @@
-async function createChatMenu(name, href, close) {
+async function createConversationMenu(name, href, close) {
   let selectedFolders = [];
 
   const addToSelected = (folderId) => {

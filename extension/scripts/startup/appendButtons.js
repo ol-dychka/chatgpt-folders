@@ -13,7 +13,7 @@ function appendButtonsToLinks() {
         e.preventDefault();
         attachPopup(
           (close) =>
-            createChatMenu(link.firstChild.innerText, link.href, close),
+            createConversationMenu(link.firstChild.innerText, link.href, close),
           e
         );
       });

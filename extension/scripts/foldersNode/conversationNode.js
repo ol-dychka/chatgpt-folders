@@ -17,11 +17,7 @@ function createConversationNode(conversation, folder) {
   optionsButton.classList.add("inline-text-button");
   optionsButton.innerText = "•••";
   optionsButton.addEventListener("click", (e) =>
-    attachPopup(
-      (close) =>
-        createChatOptions(conversation, folder.id, conversationHeader, close),
-      e
-    )
+    attachPopup((close) => createConversationOptions(conversation, close), e)
   );
 
   conversationText.appendChild(link);
