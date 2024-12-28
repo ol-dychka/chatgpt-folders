@@ -18,7 +18,7 @@ async function handleDropToFolder(e, folderId, destinationChat) {
 
     isFolderDropping = false;
   }
-  await updateFolders();
+  await updateFoldersNode();
 }
 
 async function handleDropFolder(e, destinationFolderId) {
@@ -31,7 +31,7 @@ async function handleDropFolder(e, destinationFolderId) {
 
     isFolderDropping = false;
   }
-  await updateFolders();
+  await updateFoldersNode();
 }
 
 async function handleDropChat(e, folderId, chat) {
@@ -44,7 +44,7 @@ async function handleDropChat(e, folderId, chat) {
 
     isChatDropping = false;
   }
-  await updateFolders();
+  await updateFoldersNode();
 }
 
 async function handleDropOutside(e) {
@@ -57,7 +57,7 @@ async function handleDropOutside(e) {
 
     isFolderDropping = false;
   }
-  await updateFolders();
+  await updateFoldersNode();
 }
 
 function handleDragFolder(e, folderId) {

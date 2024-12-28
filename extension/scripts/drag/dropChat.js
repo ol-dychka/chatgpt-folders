@@ -29,8 +29,6 @@ async function dropChatInDifferentFolder(
 ) {
   let { [destinationFolderId]: destinationFolder = [] } =
     await chrome.storage.local.get([destinationFolderId]);
-  const data = await api.getFolders();
-  console.log("HUI: ", data);
 
   // duplicate
   if (destinationFolder.some((chat) => chat.href === draggedChat.href)) return;

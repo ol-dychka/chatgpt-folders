@@ -6,7 +6,7 @@ function createFolderOptions(folder, folderNameNode, optionsButton, close) {
   editNameButton.classList.add("styled-button");
   editNameButton.innerText = "Name";
   editNameButton.addEventListener("click", () => {
-    handleEditFolderName(folder.id, optionsButton, folderNameNode);
+    handleEditFolderName(folder._id, optionsButton, folderNameNode);
     close();
   });
 
@@ -14,7 +14,7 @@ function createFolderOptions(folder, folderNameNode, optionsButton, close) {
   editColorButton.classList.add("styled-button");
   editColorButton.innerText = "Color";
   editColorButton.addEventListener("click", () => {
-    handleEditFolderColor(folder.id, optionsButton, folderNameNode);
+    handleEditFolderColor(folder._id, optionsButton, folderNameNode);
     close();
   });
 
@@ -22,7 +22,7 @@ function createFolderOptions(folder, folderNameNode, optionsButton, close) {
   deleteButton.classList.add("styled-button");
   deleteButton.innerText = "Delete";
   deleteButton.addEventListener("click", () => {
-    handleDeleteFolder(folder.id);
+    handleDeleteFolder(folder._id);
     close();
   });
 
@@ -34,20 +34,15 @@ function createFolderOptions(folder, folderNameNode, optionsButton, close) {
 }
 
 async function handleDeleteFolder(id) {
-  let { folders = [] } = await chrome.storage.local.get("folders");
+  await api.deleteFolder(id);
 
-  folders = removeFolderFromFolders(folders, id);
-  chrome.storage.local.set({ folders: folders });
-  chrome.storage.local.remove([id]);
-
-  await updateFolders();
+  await updateFoldersNode();
 }
 
-async function handleEditFolderColor(folderId, optionsButton, folderNameNode) {
+async function handleEditFolderColor(id, optionsButton, folderNameNode) {
   optionsButton.disabled = true;
 
-  let { folders = [] } = await chrome.storage.local.get("folders");
-  let folder = getFolderFromFolders(folders, folderId);
+  let folder = await api.getFolder(id);
 
   const input = document.createElement("input");
   input.type = "color";
@@ -61,20 +56,17 @@ async function handleEditFolderColor(folderId, optionsButton, folderNameNode) {
   folderNameNode.appendChild(input);
   folderNameNode.appendChild(saveButton);
 
-  saveButton.addEventListener("click", () => {
-    folder.color = input.value;
-    folders = replaceFolderInFolders(folders, folder.id, folder);
-    chrome.storage.local.set({ folders: folders });
+  saveButton.addEventListener("click", async () => {
+    await api.updateFolder(id, { color: input.value });
 
-    updateFolders();
+    await updateFoldersNode();
   });
 }
 
-async function handleEditFolderName(folderId, optionsButton, folderNameNode) {
+async function handleEditFolderName(id, optionsButton, folderNameNode) {
   optionsButton.disabled = true;
 
-  let { folders = [] } = await chrome.storage.local.get("folders");
-  let folder = getFolderFromFolders(folders, folderId);
+  let folder = await api.getFolder(id);
 
   const input = document.createElement("input");
   input.classList.add("styled-inline-input");
@@ -88,11 +80,9 @@ async function handleEditFolderName(folderId, optionsButton, folderNameNode) {
   folderNameNode.appendChild(input);
   folderNameNode.appendChild(saveButton);
 
-  saveButton.addEventListener("click", () => {
-    folder.name = input.value;
-    folders = replaceFolderInFolders(folders, folder.id, folder);
-    chrome.storage.local.set({ folders: folders });
+  saveButton.addEventListener("click", async () => {
+    await api.updateFolder(id, { name: input.value });
 
-    updateFolders();
+    await updateFoldersNode();
   });
 }

@@ -39,17 +39,18 @@ folderRouter.post("/create", async (req, res) => {
 // update folder
 folderRouter.post("/:id", async (req, res) => {
   const { id } = req.params;
+  console.log(req.body);
   const { name, color, isOpen } = req.body;
 
-  if (!name || !color) {
-    return res.status(400).json({ error: "Name and color are required" });
+  if (!name && !color && isOpen === undefined) {
+    return res.status(400).json({ error: "a change is required" });
   }
 
   try {
     const folder = await folderModel.findById(id);
-    folder.name = name;
-    folder.color = color;
-    folder.isOpen = isOpen;
+    if (name) folder.name = name;
+    if (color) folder.color = color;
+    if (isOpen !== undefined) folder.isOpen = isOpen;
     await folder.save();
     res.status(200).json({ message: "Data saved successfully", data: folder });
   } catch (err) {

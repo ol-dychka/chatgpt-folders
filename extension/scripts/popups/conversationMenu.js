@@ -104,5 +104,5 @@ function handleAddChat(name, href, selectedFolders) {
     if (folder.some((chat) => chat.href === href)) return;
     chrome.storage.local.set({ [folderId]: [...folder, { name, href }] });
   });
-  updateFolders();
+  updateFoldersNode();
 }

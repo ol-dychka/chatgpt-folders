@@ -3,8 +3,8 @@ const api = {
 
   getFolder: async (folderId) => getData(`folders/${folderId}`),
   createFolder: async (newFolder) => postData("folders/create", newFolder),
-  updateFolder: async (folderId, oldFolder, fragmentedFolder) =>
-    postData(`folders/${folderId}`, { ...oldFolder, ...fragmentedFolder }),
+  updateFolder: async (folderId, folderFragment) =>
+    postData(`folders/${folderId}`, folderFragment),
   deleteFolder: async (folderId) => deleteData(`folders/${folderId}`),
 
   createConversation: async (conversationName, conversationId, folderId) =>

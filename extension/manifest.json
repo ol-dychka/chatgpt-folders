@@ -15,19 +15,19 @@
         "scripts/drag/dropFolder.js",
 
         "scripts/popups/popup.js",
-        "scripts/popups/chatOptions.js",
+        "scripts/popups/conversationOptions.js",
         "scripts/popups/folderOptions.js",
+        "scripts/popups/conversationMenu.js",
         "scripts/popups/folderMenu.js",
-        "scripts/popups/chatMenu.js",
 
         "scripts/api/api.js",
         "scripts/api/getData.js",
         "scripts/api/postData.js",
         "scripts/api/deleteData.js",
 
-        "scripts/sidebar/foldersNode.js",
-        "scripts/sidebar/folderNode.js",
-        "scripts/sidebar/conversationNode.js",
+        "scripts/foldersNode/foldersNode.js",
+        "scripts/foldersNode/folderNode.js",
+        "scripts/foldersNode/conversationNode.js",
 
         "scripts/startup/appendButtons.js",
         "scripts/startup/appendFolders.js",

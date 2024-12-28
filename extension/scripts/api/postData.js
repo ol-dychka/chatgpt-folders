@@ -6,7 +6,7 @@ async function postData(destination, body) {
         "Content-Type": "application/json",
         "User-Id": `${USER_ID}`,
       },
-      body,
+      body: JSON.stringify(body),
     });
 
     if (!response.ok) {
