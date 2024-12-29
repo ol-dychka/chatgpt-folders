@@ -1,3 +1,14 @@
+// this function creates a menu where user can change
+// name and color of a folder or delete it
+//
+// params:
+// folder
+// folderNameNode - element which will have inputs for name and color change
+// optionButton - button that needs to be disabled during some methods
+// close - method that closes the menu
+//
+// returns: menu element
+
 function createFolderOptions(folder, folderNameNode, optionsButton, close) {
   const container = document.createElement("div");
   container.classList.add("options-container");
@@ -33,12 +44,17 @@ function createFolderOptions(folder, folderNameNode, optionsButton, close) {
   return container;
 }
 
+// this function makes a call to backend to delete a folder by id
 async function handleDeleteFolder(id) {
   await api.deleteFolder(id);
 
   await updateFoldersNode();
 }
 
+// this function handles a color change.
+// folderNameNodes content gets repalced by color input.
+// save button persists the change in backend and folder
+// gets updated on frontend shortly after
 async function handleEditFolderColor(folder, optionsButton, folderNameNode) {
   optionsButton.disabled = true;
 
@@ -61,6 +77,10 @@ async function handleEditFolderColor(folder, optionsButton, folderNameNode) {
   });
 }
 
+// this function handles a name change.
+// folderNameNodes content gets repalced by text input.
+// save button persists the change in backend and folder
+// gets updated on frontend shortly after
 async function handleEditFolderName(folder, optionsButton, folderNameNode) {
   optionsButton.disabled = true;
 

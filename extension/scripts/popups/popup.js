@@ -1,4 +1,9 @@
-// accepts a function that creates a node and event
+// this function creates a popup at the user cursors position
+// popup dissapears when user clicks outside of it of when close() function is invoked
+// params:
+// createPopup - callback function that creates an element (e.g. menu or options)
+// e - event that provides cursor position
+
 async function attachPopup(createPopup, e) {
   const popup = await createPopup(close);
   popup.style.position = "fixed";

@@ -1,4 +1,9 @@
-function createConversationNode(conversation, folder) {
+// creates a conversation element that can be interacted with (drag-and-drop, click)
+// params:
+// conversation - provides information for link (href is made from conversationId property)
+// folderId - provides information for drag-and-drop functionality
+
+function createConversationNode(conversation, folderId) {
   const conversationNode = document.createElement("li");
   conversationNode.style.position = "relative";
 
@@ -17,19 +22,22 @@ function createConversationNode(conversation, folder) {
   optionsButton.classList.add("inline-text-button");
   optionsButton.innerText = "•••";
   optionsButton.addEventListener("click", (e) =>
-    attachPopup((close) => createConversationOptions(conversation, close), e)
+    attachPopup(
+      (close) => createConversationOptions(conversation, folderId, close),
+      e
+    )
   );
 
   conversationText.appendChild(link);
   conversationText.appendChild(optionsButton);
   conversationText.addEventListener("dragstart", (e) =>
-    handleDragConversation(e, conversation, folder)
+    handleDragConversation(e, conversation.conversationId, folderId)
   );
 
   conversationHeader.appendChild(conversationText);
   conversationNode.appendChild(conversationHeader);
   const dropzone = createDropzone((e) =>
-    handleDropConversation(e, folder._id, conversation.conversationId)
+    handleDropConversation(e, folderId, conversation.conversationId)
   );
   conversationNode.appendChild(dropzone);
 

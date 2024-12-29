@@ -93,7 +93,7 @@ conversationRouter.post("/:draggedConversationId", async (req, res) => {
   }
 });
 
-// delete chat by id
+// delete conversation by id
 conversationRouter.delete("/:conversationId", async (req, res) => {
   const { conversationId } = req.params;
   const { folderId } = req.body;

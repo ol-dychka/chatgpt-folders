@@ -1,3 +1,11 @@
+// this function creates a menu where user can create new folder.
+// There are name and color inputs
+//
+// params:
+// close - method that closes the menu
+//
+// returns: menu element
+
 function createFolderMenu(close) {
   const folderMenuContainer = document.createElement("div");
   folderMenuContainer.classList.add("folder-menu-container");
@@ -47,6 +55,8 @@ function createFolderMenu(close) {
   return folderMenuContainer;
 }
 
+// this function makes a call to backend and creates a new folder which is
+// diplayed in folder structure shortly after
 async function handleAddFolder(name, color) {
   if (/\S/.test(name)) {
     // string is not empty and not just whitespace
@@ -55,6 +65,7 @@ async function handleAddFolder(name, color) {
   }
 }
 
+// helper function to generate random color
 function generateHexCode() {
   const res =
     "#" + ((Math.random() * 0xffffff) << 0).toString(16).padStart(6, "0");

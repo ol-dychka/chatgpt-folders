@@ -1,3 +1,9 @@
+// creates a folder element that can be interacted with (drag-and-drop, toggle open)
+// params:
+// folder - provides information about folder (name, color, state)
+// conversationsNode - conversations element that is placed inside a folder
+// and can be toggled open or closed
+
 function createFolderNode(folder, conversationsNode) {
   const folderNode = document.createElement("li");
   folderNode.style.position = "relative";
@@ -62,6 +68,13 @@ function createFolderNode(folder, conversationsNode) {
   return folderNode;
 }
 
+// toggles folder open or closed, makes a call to backend every time
+// params:
+// folder - used for checking it's state
+// toggleOpenButton, folderHeader - applying CSS classes which show that folder is open,
+// purely cosmetic
+// conversationsNode - switches between hidden and not hidden states
+
 async function toggleFolder(
   folder,
   toggleOpenButton,
@@ -80,6 +93,8 @@ async function toggleFolder(
 
   await api.updateFolder(folder._id, { isOpen: folder.isOpen });
 }
+
+// helper function that gets contrasting text color to that of a folder
 
 function getContrastColor(color) {
   color = color.replace("#", "");

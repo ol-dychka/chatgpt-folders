@@ -1,3 +1,13 @@
+// Creates a dropzone (it is attached on top of element when element is created)
+// Can be interacted with while dragging to drop element inside of it
+// Event listeners track progress of dragging and apply CSS classes that make element visible
+//
+// params:
+// handleDrop - function that determines an action after dropping the element
+//
+// returns:
+// dropzone element
+
 function createDropzone(handleDrop) {
   const dropzone = document.createElement("div");
   dropzone.classList.add("dropzone");

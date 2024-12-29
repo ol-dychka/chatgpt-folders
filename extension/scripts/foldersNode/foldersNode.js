@@ -1,3 +1,8 @@
+// function that creates an element on a sidebar that has a ChatGTP-styled label,
+// folder structure and button that open up folder creation popup.
+// function makes a call to backend to get a folder object and
+// iterates it to create folder and conversation nodes
+
 async function createFoldersNode() {
   folders = await api.getFolders();
 
@@ -24,7 +29,10 @@ async function createFoldersNode() {
 
     if (folder.conversations && folder.conversations.length > 0) {
       folder.conversations.forEach((conversation) => {
-        const conversationNode = createConversationNode(conversation, folder);
+        const conversationNode = createConversationNode(
+          conversation,
+          folder._id
+        );
         conversationsNode.appendChild(conversationNode);
       });
     }
@@ -39,6 +47,10 @@ async function createFoldersNode() {
 
   return foldersContainer;
 }
+
+// function that determines a folder structure in the sidebar
+// and replaces it with updated one.
+// Used in drag-and-drop methods to update folders after a change
 
 async function updateFoldersNode() {
   const target = document.querySelector(".folders-container");

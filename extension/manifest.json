@@ -33,7 +33,14 @@
         "scripts/startup/appendFolders.js",
         "content.js"
       ],
-      "css": ["style.css"],
+      "css": [
+        "styles/global.css",
+        "styles/startup.css",
+        "styles/options.css",
+        "styles/folders.css",
+        "styles/folderMenu.css",
+        "styles/conversationMenu.css"
+      ],
       "type": "module",
       "run_at": "document_end"
     }

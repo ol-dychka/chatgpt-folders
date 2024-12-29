@@ -1,3 +1,7 @@
+// object that containes all the functions
+// communicating with backend using custom methods
+// all names are pretty self-explanatory
+
 const api = {
   getFolders: async () => getData("folders"),
 
@@ -22,6 +26,6 @@ const api = {
       destinationFolderId,
       destinationConversationId,
     }),
-  deleteConversation: async (conversationId) =>
-    deleteData(`conversations/${conversationId}`),
+  deleteConversation: async (conversationId, folderId) =>
+    deleteData(`conversations/${conversationId}`, { folderId }),
 };
