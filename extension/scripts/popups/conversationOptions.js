@@ -24,7 +24,7 @@ function createConversationOptions(conversation, folderId, close) {
 }
 
 // this function makes a call to backend and deletes conversation from folder
-async function handleConversationDelete(conversationId) {
+async function handleConversationDelete(conversationId, folderId) {
   await api.deleteConversation(conversationId, folderId);
   await updateFoldersNode();
 }

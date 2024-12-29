@@ -96,6 +96,7 @@ conversationRouter.post("/:draggedConversationId", async (req, res) => {
 // delete conversation by id
 conversationRouter.delete("/:conversationId", async (req, res) => {
   const { conversationId } = req.params;
+  console.log(req.body);
   const { folderId } = req.body;
   try {
     const folder = await folderModel.findById(folderId);
@@ -104,8 +105,9 @@ conversationRouter.delete("/:conversationId", async (req, res) => {
     );
     await folder.save();
 
-    res.status(200).json(data);
+    res.status(200).json({ message: "Data deleted successfully" });
   } catch (err) {
+    console.log(err.message);
     res.status(500).json({ error: "Server error" });
   }
 });
