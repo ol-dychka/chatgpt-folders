@@ -1,6 +1,34 @@
 import express from "express";
-const userRouter = express.Router();
 import { userModel } from "../schemas/User.js";
+import { OAuth2Client } from "google-auth-library";
+
+const userRouter = express.Router();
+const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+
+userRouter.post("/auth", async (req, res) => {
+  const { token } = req.body;
+
+  try {
+    const ticket = await client.verifyIdToken({
+      idToken: token,
+      audience: process.env.GOOGLE_CLIENT_ID,
+    });
+    console.log("ticket: ", ticket);
+
+    const payload = ticket.getPayload();
+    // User's unique Google ID
+    // const userId = payload["sub"];
+    const email = payload["email"]; // User's email
+
+    res.status(200).json({
+      message: "Authentication successful",
+      user: payload,
+    });
+  } catch (error) {
+    console.log(error.message);
+    res.status(500).json({ error: error.message });
+  }
+});
 
 userRouter.post("/create", async (req, res) => {
   const { name, email, password, folders } = req.body;

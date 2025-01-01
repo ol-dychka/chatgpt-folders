@@ -1,8 +1,8 @@
 import express from "express";
-const folderRouter = express.Router();
 import { folderModel } from "../schemas/Folder.js";
 import { userModel } from "../schemas/User.js";
-import mongoose from "mongoose";
+
+const folderRouter = express.Router();
 
 // create folder
 folderRouter.post("/create", async (req, res) => {

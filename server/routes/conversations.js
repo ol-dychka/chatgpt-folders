@@ -1,7 +1,8 @@
 import express from "express";
-const conversationRouter = express.Router();
 import { conversationModel } from "../schemas/Conversation.js";
 import { folderModel } from "../schemas/Folder.js";
+
+const conversationRouter = express.Router();
 
 // create
 conversationRouter.post("/create", async (req, res) => {

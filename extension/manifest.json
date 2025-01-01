@@ -3,7 +3,7 @@
   "name": "DOM Modifier",
   "version": "13.37",
   "description": "Modify the DOM on reactive websites",
-  "permissions": ["activeTab", "scripting", "storage"],
+  "permissions": ["activeTab", "scripting", "storage", "identity"],
   "content_scripts": [
     {
       "matches": ["https://chatgpt.com/*"],
@@ -50,6 +50,10 @@
   },
   "background": {
     "service_worker": "background.js"
+  },
+  "oauth2": {
+    "client_id": "343447638144-add6qm5ku063v6qvs2rnmfb0fku57e9a.apps.googleusercontent.com",
+    "scopes": ["email", "profile"]
   },
   "host_permissions": ["*://*/*"]
 }

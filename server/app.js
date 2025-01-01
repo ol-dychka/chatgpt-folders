@@ -6,7 +6,10 @@ import folderRouter from "./routes/folders.js";
 import conversationRouter from "./routes/conversations.js";
 import userRouter from "./routes/users.js";
 
-const allowedOrigins = ["https://chatgpt.com"];
+const allowedOrigins = [
+  "https://chatgpt.com",
+  "chrome-extension://goegajhjmmncdfohmekhkdepnfalgkof",
+];
 
 // Load environment variables
 dotenv.config();
@@ -21,6 +24,7 @@ app.use(
   cors({
     origin: (origin, callback) => {
       // Allow requests with no origin (like Chrome extensions) or from your allowedOrigins
+      console.log(origin);
       if (!origin || allowedOrigins.includes(origin)) {
         callback(null, true);
       } else {
