@@ -15,6 +15,7 @@
 // and rethrown for further handling.
 
 async function deleteData(destination, body) {
+  if (!USER_ID) return;
   try {
     const response = await fetch(`http://localhost:5000/api/${destination}`, {
       method: "DELETE",

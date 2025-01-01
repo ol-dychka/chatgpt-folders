@@ -20,10 +20,27 @@ userRouter.post("/auth", async (req, res) => {
     // const userId = payload["sub"];
     const email = payload["email"]; // User's email
 
-    res.status(200).json({
-      message: "Authentication successful",
-      user: payload,
-    });
+    // have a user already registered
+    const user = await userModel.findOne({ email }).exec();
+    if (user) {
+      res.status(200).json({
+        message: "Authentication successful",
+        id: user._id,
+      });
+    } else {
+      // user is new
+      const newUser = new userModel({
+        mimeType: "user",
+        email,
+        folders: [],
+      });
+      await newUser.save();
+
+      res.status(200).json({
+        message: "Authentication successful",
+        id: newUser._id,
+      });
+    }
   } catch (error) {
     console.log(error.message);
     res.status(500).json({ error: error.message });

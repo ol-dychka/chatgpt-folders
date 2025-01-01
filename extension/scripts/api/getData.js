@@ -16,6 +16,8 @@
 // and rethrown for further handling.
 
 async function getData(destination) {
+  if (!USER_ID) return;
+  console.log(USER_ID);
   try {
     const response = await fetch(`http://localhost:5000/api/${destination}`, {
       method: "GET",

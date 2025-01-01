@@ -35,6 +35,14 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
           if (response.ok) {
             const data = await response.json();
             console.log(data);
+            await chrome.storage.local.set({ id: data.id });
+            chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+              chrome.tabs.sendMessage(
+                tabs[0].id,
+                { action: "update" },
+                function (response) {}
+              );
+            });
           }
         } catch (error) {
           console.log("Error fetching: ", error);
