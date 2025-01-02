@@ -54,7 +54,10 @@ async function createFoldersNode() {
 
 async function updateFoldersNode() {
   const target = document.querySelector(".folders-container");
-
-  const folders = await createFoldersNode();
-  target.replaceWith(folders);
+  if (target) {
+    const folders = await createFoldersNode();
+    target.replaceWith(folders);
+  } else {
+    await appendFoldersNode();
+  }
 }

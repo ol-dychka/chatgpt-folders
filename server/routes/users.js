@@ -39,6 +39,7 @@ userRouter.post("/auth", async (req, res) => {
       res.status(200).json({
         message: "Authentication successful",
         id: newUser._id,
+        email,
       });
     }
   } catch (error) {
@@ -47,25 +48,15 @@ userRouter.post("/auth", async (req, res) => {
   }
 });
 
-userRouter.post("/create", async (req, res) => {
-  const { name, email, password, folders } = req.body;
-
-  if (!name || !email || !password) {
-    return res.status(400).json({ error: "params are required" });
-  }
+userRouter.get("/:id", async (req, res) => {
+  const { id } = req.params;
 
   try {
-    const newUser = new userModel({
-      mimeType: "user",
-      name,
-      email,
-      password,
-      folders,
-    });
-    await newUser.save();
-    res.status(200).json({ message: "Data saved successfully", data: newUser });
-  } catch (err) {
-    res.status(500).json({ error: "Server error" });
+    const user = await userModel.findById(id);
+    res.status(200).json(user.email);
+  } catch (error) {
+    console.log(error.message);
+    res.status(500).json({ error: error.message });
   }
 });
 
