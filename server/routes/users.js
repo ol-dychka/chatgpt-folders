@@ -26,6 +26,7 @@ userRouter.post("/auth", async (req, res) => {
       res.status(200).json({
         message: "Authentication successful",
         id: user._id,
+        email,
       });
     } else {
       // user is new
@@ -42,18 +43,6 @@ userRouter.post("/auth", async (req, res) => {
         email,
       });
     }
-  } catch (error) {
-    console.log(error.message);
-    res.status(500).json({ error: error.message });
-  }
-});
-
-userRouter.get("/:id", async (req, res) => {
-  const { id } = req.params;
-
-  try {
-    const user = await userModel.findById(id);
-    res.status(200).json(user.email);
   } catch (error) {
     console.log(error.message);
     res.status(500).json({ error: error.message });

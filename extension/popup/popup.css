@@ -1,0 +1,29 @@
+button {
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  font-size: 14px;
+  width: 100%;
+  color: #5d5d5d;
+  width: auto;
+  border: none;
+}
+
+button:hover {
+  background-color: #ececec;
+  color: black;
+  cursor: pointer;
+}
+
+h3 {
+  color: #5d5d5d;
+}
+
+body {
+  min-width: 144px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 0.5rem;
+  border-radius: 1rem;
+}

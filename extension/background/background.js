@@ -1,14 +1,11 @@
-import auth from "./handlers/auth.js";
-import getEmail from "./handlers/getEmail.js";
+import login from "./handlers/login.js";
+import logout from "./handlers/logout.js";
 
 chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
-  if (request.action === "getEmail") {
-    getEmail().then((email) => {
-      sendResponse({ email });
-    });
-    return true; // This keeps the message port open for the async sendResponse
-  } else if (request.action === "auth") {
-    auth();
+  if (request.action === "login") {
+    login();
+  } else if (request.action === "logout") {
+    await logout();
   } else if (request.action === "log") {
     console.log("POPUP: ", request);
   }

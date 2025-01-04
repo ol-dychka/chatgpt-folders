@@ -1,4 +1,4 @@
-export default function auth() {
+export default function login() {
   chrome.identity.launchWebAuthFlow(
     {
       url: `https://accounts.google.com/o/oauth2/auth?client_id=343447638144-add6qm5ku063v6qvs2rnmfb0fku57e9a.apps.googleusercontent.com&response_type=id_token&redirect_uri=${chrome.identity.getRedirectURL()}&scope=email%20profile`,

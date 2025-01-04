@@ -26,5 +26,7 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
     // Call your content script function here
     await getUserId();
     await updateFoldersNode();
+  } else if (message.action === "reload") {
+    location.reload();
   }
 });
