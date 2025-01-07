@@ -34,6 +34,7 @@
         "scripts/content.js"
       ],
       "css": [
+        "styles/variables.css",
         "styles/global.css",
         "styles/startup.css",
         "styles/options.css",

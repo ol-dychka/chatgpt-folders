@@ -52,7 +52,7 @@
   padding: 0.5rem 1rem;
   border-radius: 0.5rem;
   user-select: none;
-  color: black;
+  color: var(--text-color);
 }
 
 .dropzone {
@@ -69,5 +69,5 @@
 }
 
 .conversation-text:hover {
-  background-color: #ececec;
+  background-color: var(--hover-color);
 }

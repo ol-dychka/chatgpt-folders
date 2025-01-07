@@ -18,8 +18,8 @@
 }
 
 .styled-button:hover {
-  background-color: #ececec;
-  color: black;
+  background-color: var(--hover-color);
+  color: var(--text-color);
 }
 
 .inline-button {
@@ -34,7 +34,7 @@
 }
 
 .inline-button:hover {
-  color: black;
+  color: var(--text-color);
 }
 
 .inline-text-button {
@@ -57,13 +57,14 @@
 }
 
 .inline-text-button:hover {
-  color: black;
+  color: var(--text-color);
 }
 
 .styled-input {
   width: 100%;
   padding: 0.5rem 1rem;
   border-radius: 0.5rem;
+  background-color: var(--input-color);
 }
 
 .styled-input:focus {
@@ -80,15 +81,15 @@
 }
 
 input[type="checkbox"]:checked {
-  color: #5d5d5d;
+  color: var(--text-color);
 }
 
 input[type="checkbox"] {
   width: 20px;
   height: 20px;
   border-radius: 0.5rem;
-  background-color: #fff;
-  border: 2px solid #ccc;
+  background-color: var(--bg-color);
+  border: 2px solid var(--hover-color);
   cursor: pointer;
   appearance: none; /* Remove default checkbox styles */
   -webkit-appearance: none;

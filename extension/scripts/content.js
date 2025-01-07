@@ -6,6 +6,22 @@ async function getUserId() {
   USER_ID = id;
 }
 
+// set theme color
+function setConversationHoverColor(theme) {
+  if (theme === "dark") {
+    document.documentElement.style.setProperty("--hover-color", "#212121");
+    document.documentElement.style.setProperty("--text-color", "#ececec");
+    document.documentElement.style.setProperty("--bg-color", "#212121");
+    document.documentElement.style.setProperty("--input-color", "#2f2f2f");
+  } else {
+    document.documentElement.style.setProperty("--hover-color", "#ececec");
+    document.documentElement.style.setProperty("--text-color", "#000000");
+    document.documentElement.style.setProperty("--bg-color", "#ffffff");
+    document.documentElement.style.setProperty("--input-color", "#f4f4f4");
+  }
+}
+setConversationHoverColor(document.documentElement.className);
+
 // Observe changes in the DOM using MutationObserver
 // for each mutation, append
 // 1) folder structure inn the sidebar
@@ -18,6 +34,15 @@ const observer = new MutationObserver(async () => {
 observer.observe(document.body, {
   childList: true, // Watch for added/removed elements
   subtree: true, // Include all descendants
+});
+
+// observes changes of theme
+const themeObserver = new MutationObserver(() => {
+  setConversationHoverColor(document.documentElement.className);
+});
+themeObserver.observe(document.documentElement, {
+  attributes: true,
+  attributeFilter: ["class"],
 });
 
 // function runs when user is logged in / logged out
