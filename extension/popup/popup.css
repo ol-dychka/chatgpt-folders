@@ -3,7 +3,7 @@ button {
   border-radius: 0.5rem;
   font-size: 14px;
   width: 100%;
-  color: #5d5d5d;
+  color: var(--text-inactive-color);
   width: auto;
   border: none;
 }
@@ -15,7 +15,7 @@ button:hover {
 }
 
 h3 {
-  color: #5d5d5d;
+  color: var(--text-inactive-color);
 }
 
 body {

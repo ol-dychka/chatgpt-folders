@@ -10,7 +10,7 @@
   border-radius: 0.5rem;
   font-size: 14px;
   width: 100%;
-  color: #5d5d5d;
+  color: var(--text-inactive-color);
 }
 
 .flex-between .styled-button {
@@ -23,7 +23,7 @@
 }
 
 .inline-button {
-  color: #5d5d5d;
+  color: var(--text-inactive-color);
   font-weight: 700;
   margin: 0 5px;
 }
@@ -38,7 +38,7 @@
 }
 
 .inline-text-button {
-  color: #5d5d5d;
+  color: var(--text-inactive-color);
   font-size: 14px;
   margin-left: auto;
 }
@@ -74,6 +74,7 @@
 .styled-inline-input {
   width: 100%;
   border-radius: 0.5rem;
+  color: var(--text-color);
 }
 
 .styled-inline-input:focus {
@@ -81,7 +82,7 @@
 }
 
 input[type="checkbox"]:checked {
-  color: var(--text-color);
+  color: var(--text-inactive-color);
 }
 
 input[type="checkbox"] {
@@ -89,7 +90,7 @@ input[type="checkbox"] {
   height: 20px;
   border-radius: 0.5rem;
   background-color: var(--bg-color);
-  border: 2px solid var(--hover-color);
+  border: 2px solid var(--input-color);
   cursor: pointer;
   appearance: none; /* Remove default checkbox styles */
   -webkit-appearance: none;
