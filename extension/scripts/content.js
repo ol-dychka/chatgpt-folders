@@ -7,27 +7,6 @@ async function getUserId() {
 }
 
 // set theme color
-function setConversationHoverColor(theme) {
-  if (theme === "dark") {
-    document.documentElement.style.setProperty("--hover-color", "#212121");
-    document.documentElement.style.setProperty("--text-color", "#ececec");
-    document.documentElement.style.setProperty(
-      "--text-inactive-color",
-      "#b4b4b4"
-    );
-    document.documentElement.style.setProperty("--bg-color", "#212121");
-    document.documentElement.style.setProperty("--input-color", "#2f2f2f");
-  } else {
-    document.documentElement.style.setProperty("--hover-color", "#ececec");
-    document.documentElement.style.setProperty("--text-color", "#000000");
-    document.documentElement.style.setProperty(
-      "--text-inactive-color",
-      "#5d5d5d"
-    );
-    document.documentElement.style.setProperty("--bg-color", "#ffffff");
-    document.documentElement.style.setProperty("--input-color", "#f4f4f4");
-  }
-}
 setConversationHoverColor(document.documentElement.className);
 
 // Observe changes in the DOM using MutationObserver
@@ -36,8 +15,10 @@ setConversationHoverColor(document.documentElement.className);
 // 2) "+" buttons to all conversations
 const observer = new MutationObserver(async () => {
   await getUserId();
-  await appendFoldersNode();
-  appendButtonsToConversations();
+  if (USER_ID) {
+    await appendFoldersNode();
+    appendButtonsToConversations();
+  }
 });
 observer.observe(document.body, {
   childList: true, // Watch for added/removed elements
@@ -57,8 +38,9 @@ themeObserver.observe(document.documentElement, {
 chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
   if (message.action === "update") {
     // Call your content script function here
-    await getUserId();
-    await updateFoldersNode();
+    // await getUserId();
+    // await updateFoldersNode();
+    location.reload();
   } else if (message.action === "reload") {
     location.reload();
   }
