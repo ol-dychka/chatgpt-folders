@@ -37,11 +37,6 @@ themeObserver.observe(document.documentElement, {
 // function runs when user is logged in / logged out
 chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
   if (message.action === "update") {
-    // Call your content script function here
-    // await getUserId();
-    // await updateFoldersNode();
-    location.reload();
-  } else if (message.action === "reload") {
     location.reload();
   }
 });

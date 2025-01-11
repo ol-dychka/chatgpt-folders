@@ -4,7 +4,8 @@ import mongoose from "mongoose";
 import dotenv from "dotenv";
 import folderRouter from "./routes/folders.js";
 import conversationRouter from "./routes/conversations.js";
-import userRouter from "./routes/users.js";
+import authRouter from "./routes/auth.js";
+import bodyParser from "body-parser";
 
 const allowedOrigins = [
   "https://chatgpt.com",
@@ -24,7 +25,7 @@ app.use(
   cors({
     origin: (origin, callback) => {
       // Allow requests with no origin (like Chrome extensions) or from your allowedOrigins
-      console.log(origin);
+      console.log("origin: ", origin);
       if (!origin || allowedOrigins.includes(origin)) {
         callback(null, true);
       } else {
@@ -37,7 +38,7 @@ app.use(
 // Use the API routes
 app.use("/api/folders", folderRouter);
 app.use("/api/conversations", conversationRouter);
-app.use("/api/users", userRouter);
+app.use("/api/auth", authRouter);
 
 // MongoDB connection
 mongoose

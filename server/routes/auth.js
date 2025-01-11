@@ -2,15 +2,22 @@ import express from "express";
 import { userModel } from "../schemas/User.js";
 import { OAuth2Client } from "google-auth-library";
 
-const userRouter = express.Router();
+const authRouter = express.Router();
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
-userRouter.post("/auth", async (req, res) => {
-  const { token } = req.body;
+authRouter.post("/google/callback", async (req, res) => {
+  const { redirect_url } = req.body;
+
+  const urlParams = new URLSearchParams(
+    new URL(redirect_url).hash.substring(1)
+  );
+  const idToken = urlParams.get("id_token"); // ID Token is in the hash fragment
+
+  console.log("ID Token:", idToken);
 
   try {
     const ticket = await client.verifyIdToken({
-      idToken: token,
+      idToken,
       audience: process.env.GOOGLE_CLIENT_ID,
     });
     console.log("ticket: ", ticket);
@@ -44,9 +51,21 @@ userRouter.post("/auth", async (req, res) => {
       });
     }
   } catch (error) {
-    console.log(error.message);
+    console.log("callback error: ", error.message);
     res.status(500).json({ error: error.message });
   }
 });
 
-export default userRouter;
+authRouter.post("/google", async (req, res) => {
+  const authorizeUrl = client.generateAuthUrl({
+    client_id: process.env.GOOGLE_CLIENT_ID,
+    // access_type: "offline", // To get refresh tokens
+    scope: ["email", "profile"],
+    // prompt: "consent", // Always ask user to re-consent
+    response_type: "id_token",
+  });
+
+  res.json({ url: authorizeUrl });
+});
+
+export default authRouter;
