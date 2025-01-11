@@ -1,14 +1,10 @@
+import postData from "./postData.js";
+
 export default async function login() {
   try {
     const nonce = generateNonce();
     const redirectUri = chrome.identity.getRedirectURL();
-    const response = await fetch("http://localhost:5000/api/auth/google", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    const { url } = await response.json();
+    const { url } = await postData("auth/google");
     console.log("URL: ", url);
     console.log("redURI: ", redirectUri);
     chrome.identity.launchWebAuthFlow(
@@ -24,29 +20,18 @@ export default async function login() {
 
         console.log(redirect_url);
 
-        const response = await fetch(
-          "http://localhost:5000/api/auth/google/callback",
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ redirect_url }),
-          }
-        );
-        console.log("RESP: ", response);
-        const data = await response.json();
+        const data = await postData("auth/google/callback", {
+          redirect_url,
+        });
 
-        if (response.ok) {
-          console.log("user: ", data);
+        console.log("user: ", data);
 
-          await chrome.storage.local.set({ id: data.id });
-          await chrome.storage.local.set({ email: data.email });
+        await chrome.storage.local.set({ id: data.id });
+        await chrome.storage.local.set({ email: data.email });
 
-          chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-            chrome.tabs.sendMessage(tabs[0].id, { action: "update" });
-          });
-        }
+        chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+          chrome.tabs.sendMessage(tabs[0].id, { action: "update" });
+        });
       }
     );
   } catch (error) {
