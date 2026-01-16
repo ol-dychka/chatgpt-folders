@@ -1,0 +1,22 @@
+# ChatGPT Folders – Chrome Extension
+
+Chrome extension web app for organizing ChatGPT conversations.
+
+## Live Demo
+Extension is not in Chrome Web Store due to ChatGPT implementing
+similar functionality soon after release.
+
+However, a version of extension that saves data locally in users browser
+is in Chrome Web Store.
+
+https://github.com/ol-dychka/chatgpt-folders-local
+
+https://chromewebstore.google.com/detail/chatgpt-folders/akgpkjgpdobkagnipbohfpagjmbpjnfb
+
+## Tech Stack
+- Frontend: HTML + CSS + JavaScript
+- Backend: Express, Mongoose, OAuth with Google
+- Database: MongoDB
+
+## Features
+- User registration & login
